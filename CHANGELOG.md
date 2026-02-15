@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.0.3
+
+### Added or Changed
+- Rewrote `README.md` with a full VERZOLA project narrative and architecture blueprint.
+- Added explicit scope sections for what VERZOLA is and is not, including deployment modes and policy model.
+- Added detailed transport design sections covering inbound fronting, outbound relay semantics, and Postfix wiring.
+- Added observability, security threat model, repository plan, demo plan, and phased delivery roadmap content.
+- Added draft `verzolactl` policy YAML and draft Postfix `main.cf` / `master.cf` snippets for implementation guidance.
+- Updated `repo/images/verzola-screen.png` screenshot asset.
+- Removed obsolete `repo/images/logo.png` project image asset.
+- Updated README version marker from `v1.0.2` to `v1.0.3`.
+
 ## v1.0.2
 
 ### Added or Changed
