@@ -40,7 +40,9 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v1.0.3
+    Version: v0.1.0
+    <br />
+    Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
     <a href="https://github.com/zcalifornia-ph/verzola"><strong>Explore the docs »</strong></a>
     <br />
@@ -87,7 +89,7 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#quick-start-planned">Quick Start (Planned)</a></li>
+        <li><a href="#quick-start-early-implementation">Quick Start (Early Implementation)</a></li>
       </ul>
     </li>
     <li>
@@ -299,6 +301,8 @@ verzola/
     demo.md
     adr/
     diagrams/
+  learn/
+    u1-b1-inbound-starttls-study-guide.md
 
   deploy/
     compose/
@@ -357,7 +361,7 @@ Ownership split:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Current status: architecture and delivery plan are defined. Implementation starts with Phase 1 inbound proxy (classical TLS), followed by outbound relay and policy tooling.
+Status: pre-alpha (docs/spec complete, implementation in progress).
 
 ### Prerequisites
 
@@ -367,16 +371,22 @@ Current status: architecture and delivery plan are defined. Implementation start
 * Python 3.11+
 * Prometheus and Grafana (for observability stack demos)
 
-### Quick Start (Planned)
+### Quick Start (Early Implementation)
 
 1. Clone the repo.
    ```sh
    git clone https://github.com/zcalifornia-ph/verzola.git
    cd verzola
    ```
-2. Start with inbound proxy milestone and local Postfix loopback wiring.
-3. Add metrics endpoint and wire dashboard panels.
-4. Expand to outbound relay mode with `250/4xx` semantics.
+2. Ensure the Rust toolchain is installed and available on PATH.
+3. Run inbound STARTTLS tests:
+   ```sh
+   cd verzola-proxy
+   cargo test
+   ```
+4. Review inbound implementation notes in `docs/inbound-listener.md` and `docs/adr/0001-u1-b1-listener-starttls-state-machine.md`.
+5. Study the guided walkthrough in `learn/u1-b1-inbound-starttls-study-guide.md`.
+6. Continue with Unit U1 Bolt U1-B2 (streaming forwarder to Postfix loopback).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -450,6 +460,10 @@ Delivery semantics expected from VERZOLA relay:
 - [ ] Phase 4 - PQ lab mode (hybrid/PQ preference with experimental TLS stack)
 - [ ] Phase 5 - Hardening and release polish (least privilege, security docs, reproducible demo, tagged release)
 
+Progress note: Unit U1 Bolt U1-B1 is complete in `REQUIREMENTS.md`, with listener implementation, tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `docs/*`).
+
+Learning note: a step-by-step learning asset for this bolt is now available at `learn/u1-b1-inbound-starttls-study-guide.md`.
+
 See the [open issues](https://github.com/zcalifornia-ph/verzola/issues) for proposed features and known gaps.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -475,10 +489,10 @@ Demo flow:
 
 ## Immediate Next Actions
 
-1. Create the planned monorepo tree with placeholder READMEs.
-2. Write `docs/architecture.md` with inbound/outbound diagrams.
-3. Implement Phase 1 inbound proxy using classical TLS first.
-4. Add Prometheus metrics and one Grafana overview dashboard.
+1. Implement Unit U1 Bolt U1-B2 streaming relay path to Postfix loopback (`localhost:2525`) with backpressure-safe behavior.
+2. Add production TLS adapter wiring (`TlsUpgrader`) with certificate loading, secure defaults, and clear failure mapping.
+3. Add CI checks to run proxy lint/test gates on every pull request.
+4. Add inbound interoperability checks using a real SMTP client matrix (for example Postfix and swaks).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -488,6 +502,7 @@ Demo flow:
 ## Contributing
 
 Contributions are welcome, especially around SMTP interoperability tests, policy validation tooling, and observability improvements.
+See `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` for process, behavior, and vulnerability reporting.
 
 1. Fork the project.
 2. Create your feature branch (`git checkout -b feature/your-feature`).
