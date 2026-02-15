@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.6
+
+### Added or Changed
+- Added learning module `learn/u1-b1-inbound-starttls-study-guide.md` to teach Unit U1 / Bolt U1 implementation details (mental model, code walkthrough, tests, drills, and debugging playbook).
+- Updated `README.md` version marker from `v1.0.5` to `v1.0.6`.
+- Updated `README.md` repository tree, quick-start flow, and progress notes to include the new learning asset under `learn/`.
+
 ## v1.0.5
 
 ### Added or Changed
