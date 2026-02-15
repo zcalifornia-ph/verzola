@@ -120,7 +120,7 @@ Acceptance criteria:
 
 #### Compliance
 - NFR-CMP-01: Security-relevant changes must be traceable via version control and changelog entries.
-- NFR-CMP-02: Threat model and security policy documentation must be present before v1.0 GA.
+- NFR-CMP-02: Threat model and security policy documentation must be present before 1.0 GA (during the 0.x pre-release cycle).
 - NFR-CMP-03: Release artifacts must include checksums and provenance notes for reproducibility.
 
 ### Risk Register

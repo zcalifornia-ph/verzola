@@ -40,7 +40,9 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v1.0.6
+    Version: v0.1.0
+    <br />
+    Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
     <a href="https://github.com/zcalifornia-ph/verzola"><strong>Explore the docs »</strong></a>
     <br />
@@ -359,7 +361,7 @@ Ownership split:
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Current status: Phase 1 execution is active. Unit U1 / Bolt U1-B1 (inbound listener + STARTTLS negotiation) is implemented and acceptance-validated with passing integration tests in `verzola-proxy/tests/inbound_starttls.rs`.
+Status: pre-alpha (docs/spec complete, implementation in progress).
 
 ### Prerequisites
 
@@ -500,6 +502,7 @@ Demo flow:
 ## Contributing
 
 Contributions are welcome, especially around SMTP interoperability tests, policy validation tooling, and observability improvements.
+See `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and `SECURITY.md` for process, behavior, and vulnerability reporting.
 
 1. Fork the project.
 2. Create your feature branch (`git checkout -b feature/your-feature`).
