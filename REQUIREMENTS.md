@@ -158,13 +158,15 @@ Deliverables:
 - [ ] Integration tests for inbound flows
 - [ ] Operator docs for inbound mode
 
-#### [ ] Bolt U1-B1: Listener and STARTTLS Negotiation
+#### [x] Bolt U1-B1: Listener and STARTTLS Negotiation
 Subtasks:
-- [ ] Design: listener configuration model, TLS handshake state machine, error mapping.
-- [ ] Implement: SMTP listener with STARTTLS advertisement and upgrade path.
-- [ ] Test: handshake success/failure cases and protocol compliance tests.
-- [ ] Docs: listener setup and certificate requirements.
-- [ ] Review: security and interoperability review sign-off.
+- [x] Design: listener configuration model, TLS handshake state machine, error mapping.
+- [x] Implement: SMTP listener with STARTTLS advertisement and upgrade path.
+- [x] Test: handshake success/failure cases and protocol compliance tests.
+- [x] Docs: listener setup and certificate requirements.
+- [x] Review: security and interoperability review sign-off.
+- Completed: 2026-02-16
+- Evidence: `cmd /c '"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat" -arch=x64 >nul && set PATH=%USERPROFILE%\.cargo\bin;%PATH% && cd /d d:\Programming\Repositories\verzola\verzola-proxy && cargo test'` -> `3 passed; 0 failed`.
 
 #### [ ] Bolt U1-B2: Streaming Forwarder to Postfix
 Subtasks:

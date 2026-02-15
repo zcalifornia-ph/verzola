@@ -1,0 +1,12 @@
+[package]
+name = "verzola-proxy"
+version = "0.1.0"
+edition = "2021"
+description = "Inbound SMTP listener slice for VERZOLA Unit U1 Bolt B1."
+license = "Apache-2.0"
+
+[lib]
+name = "verzola_proxy"
+path = "src/lib.rs"
+
+[dependencies]

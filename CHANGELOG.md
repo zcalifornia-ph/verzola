@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.0.5
+
+### Added or Changed
+- Completed Unit U1 / Bolt U1-B1 in `REQUIREMENTS.md` by checking all subtasks and marking the bolt as done with dated acceptance evidence.
+- Installed and validated local Rust toolchain prerequisites for this workspace (`rustc 1.93.1`, `cargo 1.93.1`) and Windows MSVC Build Tools dependency for Rust linking.
+- Executed acceptance run for `verzola-proxy` and confirmed inbound STARTTLS integration tests pass (`3 passed; 0 failed`).
+- Updated `README.md` version marker from `v1.0.4` to `v1.0.5` and refreshed status/progress/next-actions text to reflect the completed U1-B1 milestone.
+
+## v1.0.4
+
+### Added or Changed
+- Added initial `verzola-proxy` crate scaffold for Unit U1 / Bolt U1-B1, including `src/main.rs`, `src/lib.rs`, and inbound listener implementation under `src/inbound/mod.rs`.
+- Added inbound STARTTLS integration tests in `verzola-proxy/tests/inbound_starttls.rs` covering success flow, temporary TLS failure mapping (`454`), and protocol-order enforcement.
+- Added inbound implementation documentation and traceability artifacts:
+  - `docs/inbound-listener.md`
+  - `docs/adr/0001-u1-b1-listener-starttls-state-machine.md`
+  - `docs/reviews/u1-b1-security-interoperability.md`
+  - `docs/bolts/u1-b1-traceability.md`
+- Updated `REQUIREMENTS.md` Unit U1 / Bolt U1-B1 section with a dated note describing current acceptance-run blocker in this environment (missing `cargo`/`rustc`).
+- Updated `README.md` version marker from `v1.0.3` to `v1.0.4` and refreshed status/next-step guidance to reflect the new inbound implementation baseline.
+
 ## v1.0.3
 
 ### Added or Changed
