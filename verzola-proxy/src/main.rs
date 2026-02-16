@@ -12,6 +12,7 @@ fn main() -> std::io::Result<()> {
         banner_host: "localhost".to_string(),
         advertise_starttls: true,
         max_line_len: 4096,
+        postfix_upstream_addr: None,
     };
 
     let listener = InboundListener::bind(config, NoopTlsUpgrader)?;

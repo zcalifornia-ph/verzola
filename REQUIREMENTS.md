@@ -168,13 +168,15 @@ Subtasks:
 - Completed: 2026-02-16
 - Evidence: `cmd /c '"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\VsDevCmd.bat" -arch=x64 >nul && set PATH=%USERPROFILE%\.cargo\bin;%PATH% && cd /d d:\Programming\Repositories\verzola\verzola-proxy && cargo test'` -> `3 passed; 0 failed`.
 
-#### [ ] Bolt U1-B2: Streaming Forwarder to Postfix
+#### [x] Bolt U1-B2: Streaming Forwarder to Postfix
 Subtasks:
-- [ ] Design: streaming pipeline and backpressure behavior.
-- [ ] Implement: command/data relay to loopback Postfix endpoint.
-- [ ] Test: large message and concurrent session tests.
-- [ ] Docs: integration notes for `main.cf` and `master.cf`.
-- [ ] Review: performance review against memory/latency targets.
+- [x] Design: streaming pipeline and backpressure behavior.
+- [x] Implement: command/data relay to loopback Postfix endpoint.
+- [x] Test: large message and concurrent session tests.
+- [x] Docs: integration notes for `main.cf` and `master.cf`.
+- [x] Review: performance review against memory/latency targets.
+- Completed: 2026-02-16
+- Evidence: `powershell -Command "$env:PATH=\"$env:USERPROFILE\\.cargo\\bin;$env:PATH\"; cargo test"` -> `5 passed; 0 failed`.
 
 #### [ ] Bolt U1-B3: Inbound Policy Enforcement and Telemetry
 Subtasks:

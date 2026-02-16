@@ -121,6 +121,7 @@ where
         banner_host: "mx.verzola.test".to_string(),
         advertise_starttls: true,
         max_line_len: 4096,
+        postfix_upstream_addr: None,
     };
 
     let listener = InboundListener::bind(config, tls_upgrader)

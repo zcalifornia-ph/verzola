@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.0
+    Version: v0.1.1
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -384,9 +384,9 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
    cd verzola-proxy
    cargo test
    ```
-4. Review inbound implementation notes in `docs/inbound-listener.md` and `docs/adr/0001-u1-b1-listener-starttls-state-machine.md`.
+4. Review inbound implementation notes in `docs/inbound-listener.md`, `docs/inbound-postfix-integration.md`, and ADRs `docs/adr/0001-u1-b1-listener-starttls-state-machine.md` + `docs/adr/0002-u1-b2-streaming-forwarder.md`.
 5. Study the guided walkthrough in `learn/u1-b1-inbound-starttls-study-guide.md`.
-6. Continue with Unit U1 Bolt U1-B2 (streaming forwarder to Postfix loopback).
+6. Continue with Unit U1 Bolt U1-B3 (inbound policy enforcement and telemetry).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -460,7 +460,7 @@ Delivery semantics expected from VERZOLA relay:
 - [ ] Phase 4 - PQ lab mode (hybrid/PQ preference with experimental TLS stack)
 - [ ] Phase 5 - Hardening and release polish (least privilege, security docs, reproducible demo, tagged release)
 
-Progress note: Unit U1 Bolt U1-B1 is complete in `REQUIREMENTS.md`, with listener implementation, tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `docs/*`).
+Progress note: Unit U1 Bolts U1-B1 and U1-B2 are complete in `REQUIREMENTS.md`, with listener + streaming relay implementation, integration tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `verzola-proxy/tests/inbound_forwarder.rs`, `docs/*`).
 
 Learning note: a step-by-step learning asset for this bolt is now available at `learn/u1-b1-inbound-starttls-study-guide.md`.
 
@@ -489,7 +489,7 @@ Demo flow:
 
 ## Immediate Next Actions
 
-1. Implement Unit U1 Bolt U1-B2 streaming relay path to Postfix loopback (`localhost:2525`) with backpressure-safe behavior.
+1. Implement Unit U1 Bolt U1-B3 inbound policy enforcement and telemetry schema/assertions.
 2. Add production TLS adapter wiring (`TlsUpgrader`) with certificate loading, secure defaults, and clear failure mapping.
 3. Add CI checks to run proxy lint/test gates on every pull request.
 4. Add inbound interoperability checks using a real SMTP client matrix (for example Postfix and swaks).
