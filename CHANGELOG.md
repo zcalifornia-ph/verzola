@@ -2,6 +2,16 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.2
+
+### Added or Changed
+- Added learning module `learn/u1-b2-streaming-forwarder-study-guide.md` with a practical walkthrough of Unit U1 / Bolt U1-B2 (streaming relay architecture, tests, debugging, and drills).
+- Updated `README.md` version marker from `v0.1.1` to `v0.1.2`.
+- Updated `README.md` learning references in the repository tree, quick-start section, and roadmap learning note to include the new U1-B2 guide.
+
+### For Deletion
+- None from this task context (no new build artifacts were generated).
+
 ## v0.1.1
 
 ### Added or Changed
