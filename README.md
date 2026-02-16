@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.2
+    Version: v0.1.3
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -380,6 +380,22 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
    cd verzola
    ```
 2. Ensure the Rust toolchain is installed and available on PATH.
+   ```sh
+   cargo --version
+   ```
+   On Windows, if you get `'cargo' is not recognized`, add Cargo to the current shell and verify again:
+   ```powershell
+   $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
+   cargo --version
+   ```
+   If that works, persist it for future shells and then reopen your terminal:
+   ```powershell
+   $cargoBin = "$env:USERPROFILE\.cargo\bin"
+   $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+   if ($userPath -notlike "*$cargoBin*") {
+     [Environment]::SetEnvironmentVariable("Path", "$cargoBin;$userPath", "User")
+   }
+   ```
 3. Run inbound STARTTLS tests:
    ```sh
    cd verzola-proxy
