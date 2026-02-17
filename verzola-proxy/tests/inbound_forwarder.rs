@@ -4,7 +4,9 @@ use std::sync::{Arc, Barrier};
 use std::thread;
 use std::time::Duration;
 
-use verzola_proxy::inbound::{InboundListener, ListenerConfig, NoopTlsUpgrader, SessionSummary};
+use verzola_proxy::inbound::{
+    InboundListener, InboundTlsPolicy, ListenerConfig, NoopTlsUpgrader, SessionSummary,
+};
 
 #[derive(Debug, Default, Clone, Copy)]
 struct PostfixSessionStats {
@@ -212,6 +214,7 @@ fn spawn_relay_listener(
             .expect("hard-coded socket address must parse"),
         banner_host: "mx.verzola.test".to_string(),
         advertise_starttls: true,
+        inbound_tls_policy: InboundTlsPolicy::Opportunistic,
         max_line_len: 4096,
         postfix_upstream_addr: Some(postfix_addr),
     };

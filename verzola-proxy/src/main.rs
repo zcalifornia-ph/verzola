@@ -1,6 +1,8 @@
 use std::net::SocketAddr;
 
-use verzola_proxy::inbound::{InboundListener, ListenerConfig, NoopTlsUpgrader};
+use verzola_proxy::inbound::{
+    InboundListener, InboundTlsPolicy, ListenerConfig, NoopTlsUpgrader,
+};
 
 fn main() -> std::io::Result<()> {
     let bind_addr: SocketAddr = "127.0.0.1:2525"
@@ -11,6 +13,7 @@ fn main() -> std::io::Result<()> {
         bind_addr,
         banner_host: "localhost".to_string(),
         advertise_starttls: true,
+        inbound_tls_policy: InboundTlsPolicy::Opportunistic,
         max_line_len: 4096,
         postfix_upstream_addr: None,
     };

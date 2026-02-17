@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.3
+    Version: v0.1.5
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -304,6 +304,7 @@ verzola/
   learn/
     u1-b1-inbound-starttls-study-guide.md
     u1-b2-streaming-forwarder-study-guide.md
+    u1-b3-inbound-policy-telemetry-study-guide.md
 
   deploy/
     compose/
@@ -401,9 +402,9 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
    cd verzola-proxy
    cargo test
    ```
-4. Review inbound implementation notes in `docs/inbound-listener.md`, `docs/inbound-postfix-integration.md`, and ADRs `docs/adr/0001-u1-b1-listener-starttls-state-machine.md` + `docs/adr/0002-u1-b2-streaming-forwarder.md`.
-5. Study the guided walkthroughs in `learn/u1-b1-inbound-starttls-study-guide.md` and `learn/u1-b2-streaming-forwarder-study-guide.md`.
-6. Continue with Unit U1 Bolt U1-B3 (inbound policy enforcement and telemetry).
+4. Review inbound implementation notes in `docs/inbound-listener.md`, `docs/inbound-postfix-integration.md`, `docs/inbound-policy-telemetry.md`, and ADRs `docs/adr/0001-u1-b1-listener-starttls-state-machine.md` + `docs/adr/0002-u1-b2-streaming-forwarder.md` + `docs/adr/0003-u1-b3-inbound-policy-and-telemetry.md`.
+5. Study the guided walkthroughs in `learn/u1-b1-inbound-starttls-study-guide.md`, `learn/u1-b2-streaming-forwarder-study-guide.md`, and `learn/u1-b3-inbound-policy-telemetry-study-guide.md`.
+6. Continue with Unit U2 Bolt U2-B1 (outbound session orchestration).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -477,9 +478,9 @@ Delivery semantics expected from VERZOLA relay:
 - [ ] Phase 4 - PQ lab mode (hybrid/PQ preference with experimental TLS stack)
 - [ ] Phase 5 - Hardening and release polish (least privilege, security docs, reproducible demo, tagged release)
 
-Progress note: Unit U1 Bolts U1-B1 and U1-B2 are complete in `REQUIREMENTS.md`, with listener + streaming relay implementation, integration tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `verzola-proxy/tests/inbound_forwarder.rs`, `docs/*`).
+Progress note: Unit U1 Bolts U1-B1, U1-B2, and U1-B3 are complete in `REQUIREMENTS.md`, with listener + streaming relay + inbound policy/telemetry implementation, integration tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `verzola-proxy/tests/inbound_forwarder.rs`, `verzola-proxy/tests/inbound_policy_telemetry.rs`, `docs/*`).
 
-Learning note: step-by-step learning assets for Unit U1 are available at `learn/u1-b1-inbound-starttls-study-guide.md` and `learn/u1-b2-streaming-forwarder-study-guide.md`.
+Learning note: step-by-step learning assets for Unit U1 are available at `learn/u1-b1-inbound-starttls-study-guide.md`, `learn/u1-b2-streaming-forwarder-study-guide.md`, and `learn/u1-b3-inbound-policy-telemetry-study-guide.md`.
 
 See the [open issues](https://github.com/zcalifornia-ph/verzola/issues) for proposed features and known gaps.
 
@@ -506,7 +507,7 @@ Demo flow:
 
 ## Immediate Next Actions
 
-1. Implement Unit U1 Bolt U1-B3 inbound policy enforcement and telemetry schema/assertions.
+1. Implement Unit U2 Bolt U2-B1 outbound session orchestration.
 2. Add production TLS adapter wiring (`TlsUpgrader`) with certificate loading, secure defaults, and clear failure mapping.
 3. Add CI checks to run proxy lint/test gates on every pull request.
 4. Add inbound interoperability checks using a real SMTP client matrix (for example Postfix and swaks).

@@ -2,6 +2,43 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.5
+
+### Added or Changed
+- Added learning module `learn/u1-b3-inbound-policy-telemetry-study-guide.md` with a practical walkthrough of Unit U1 / Bolt U1-B3 (policy model, telemetry schema, deterministic SMTP mappings, tests, and drills).
+- Updated `README.md` version marker from `v0.1.4` to `v0.1.5`.
+- Updated `README.md` learning references in the repository tree, quick-start section, and roadmap learning note to include the new U1-B3 guide.
+- Added detailed version documentation at `docs/version-v0.1.5-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-proxy/target/debug/**`
+  - `repo/target_ci/debug/**`
+  - `verzola-proxy/target_u1_b3*/`
+  - `verzola-proxy/temp_test_dir/`
+
+## v0.1.4
+
+### Added or Changed
+- Completed Unit U1 / Bolt U1-B3 in `REQUIREMENTS.md` with policy/telemetry subtasks checked, dated completion, and acceptance evidence.
+- Added inbound policy enforcement + telemetry schema in `verzola-proxy/src/inbound/mod.rs`:
+  - explicit `InboundTlsPolicy` (`opportunistic` / `require-tls`),
+  - deterministic `530 5.7.0` mapping for plaintext commands under `require-tls`,
+  - session telemetry counters for STARTTLS attempts/failures and policy/relay outcomes.
+- Added integration coverage in `verzola-proxy/tests/inbound_policy_telemetry.rs` for policy matrix and telemetry assertions.
+- Updated inbound docs/review/traceability artifacts:
+  - `docs/inbound-policy-telemetry.md`
+  - `docs/adr/0003-u1-b3-inbound-policy-and-telemetry.md`
+  - `docs/reviews/u1-b3-operational-readiness.md`
+  - `docs/bolts/u1-b3-traceability.md`
+- Updated `README.md` version marker from `v0.1.3` to `v0.1.4`, inbound references, progress note, and immediate next actions.
+
+### For Deletion
+- Build/test artifacts generated during acceptance run (left intentionally for manual cleanup):
+  - `verzola-proxy/target/debug/**`
+  - `repo/target_ci/debug/**`
+  - `verzola-proxy/target_u1_b3*/`
+
 ## v0.1.3
 
 ### Added or Changed

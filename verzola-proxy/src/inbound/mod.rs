@@ -6,11 +6,30 @@ use std::thread;
 
 pub const DEFAULT_MAX_LINE_LEN: usize = 4096;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InboundTlsPolicy {
+    Opportunistic,
+    RequireTls,
+}
+
+impl InboundTlsPolicy {
+    fn requires_tls(self) -> bool {
+        matches!(self, Self::RequireTls)
+    }
+}
+
+impl Default for InboundTlsPolicy {
+    fn default() -> Self {
+        Self::Opportunistic
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ListenerConfig {
     pub bind_addr: SocketAddr,
     pub banner_host: String,
     pub advertise_starttls: bool,
+    pub inbound_tls_policy: InboundTlsPolicy,
     pub max_line_len: usize,
     pub postfix_upstream_addr: Option<SocketAddr>,
 }
@@ -28,6 +47,13 @@ impl ListenerConfig {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidInput,
                 "max_line_len must be at least 512 bytes",
+            ));
+        }
+
+        if self.inbound_tls_policy.requires_tls() && !self.advertise_starttls {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "inbound_tls_policy=require-tls requires advertise_starttls=true",
             ));
         }
 
@@ -50,6 +76,7 @@ impl Default for ListenerConfig {
                 .expect("default inbound socket address must parse"),
             banner_host: "localhost".to_string(),
             advertise_starttls: true,
+            inbound_tls_policy: InboundTlsPolicy::default(),
             max_line_len: DEFAULT_MAX_LINE_LEN,
             postfix_upstream_addr: None,
         }
@@ -87,6 +114,17 @@ pub struct SessionSummary {
     pub command_count: usize,
     pub protocol_errors: usize,
     pub tls_negotiated: bool,
+    pub inbound_tls_policy: InboundTlsPolicy,
+    pub telemetry: SessionTelemetry,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct SessionTelemetry {
+    pub starttls_offered: bool,
+    pub starttls_attempts: usize,
+    pub tls_upgrade_failures: usize,
+    pub require_tls_rejections: usize,
+    pub relay_temporary_failures: usize,
 }
 
 pub struct InboundListener<U>
@@ -151,6 +189,13 @@ struct SessionState {
     ehlo_seen: bool,
     command_count: usize,
     protocol_errors: usize,
+    telemetry: SessionTelemetry,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum MailCommandRejection {
+    EhloRequired(&'static str),
+    TlsRequired,
 }
 
 #[derive(Debug)]
@@ -248,6 +293,7 @@ where
 
     let mut reader = BufReader::new(stream.try_clone()?);
     let mut state = SessionState::default();
+    state.telemetry.starttls_offered = config.advertise_starttls;
     let mut relay: Option<PostfixRelay> = None;
 
     loop {
@@ -285,6 +331,7 @@ where
                 write_multiline_reply(stream, 250, &lines)?;
             }
             "STARTTLS" => {
+                state.telemetry.starttls_attempts += 1;
                 if !config.advertise_starttls {
                     state.protocol_errors += 1;
                     write_reply(stream, 502, "5.5.1 STARTTLS not supported")?;
@@ -312,6 +359,7 @@ where
                     }
                     Err(error) => {
                         state.protocol_errors += 1;
+                        state.telemetry.tls_upgrade_failures += 1;
                         write_reply(
                             stream,
                             454,
@@ -321,10 +369,18 @@ where
                 }
             }
             "MAIL" => {
-                if !can_process_mail_command(&state) {
-                    state.protocol_errors += 1;
-                    write_reply(stream, 503, required_ehlo_message(&state))?;
-                    continue;
+                match can_process_mail_command(&state, config.inbound_tls_policy) {
+                    Ok(()) => {}
+                    Err(MailCommandRejection::EhloRequired(message)) => {
+                        state.protocol_errors += 1;
+                        write_reply(stream, 503, message)?;
+                        continue;
+                    }
+                    Err(MailCommandRejection::TlsRequired) => {
+                        state.telemetry.require_tls_rejections += 1;
+                        write_reply(stream, 530, "5.7.0 Must issue STARTTLS first")?;
+                        continue;
+                    }
                 }
 
                 if config.postfix_upstream_addr.is_some() {
@@ -334,6 +390,7 @@ where
                             Err(error) => {
                                 relay = None;
                                 state.protocol_errors += 1;
+                                state.telemetry.relay_temporary_failures += 1;
                                 write_reply(
                                     stream,
                                     451,
@@ -348,10 +405,18 @@ where
                 }
             }
             "RCPT" => {
-                if !can_process_mail_command(&state) {
-                    state.protocol_errors += 1;
-                    write_reply(stream, 503, required_ehlo_message(&state))?;
-                    continue;
+                match can_process_mail_command(&state, config.inbound_tls_policy) {
+                    Ok(()) => {}
+                    Err(MailCommandRejection::EhloRequired(message)) => {
+                        state.protocol_errors += 1;
+                        write_reply(stream, 503, message)?;
+                        continue;
+                    }
+                    Err(MailCommandRejection::TlsRequired) => {
+                        state.telemetry.require_tls_rejections += 1;
+                        write_reply(stream, 530, "5.7.0 Must issue STARTTLS first")?;
+                        continue;
+                    }
                 }
 
                 if config.postfix_upstream_addr.is_some() {
@@ -361,6 +426,7 @@ where
                             Err(error) => {
                                 relay = None;
                                 state.protocol_errors += 1;
+                                state.telemetry.relay_temporary_failures += 1;
                                 write_reply(
                                     stream,
                                     451,
@@ -375,10 +441,18 @@ where
                 }
             }
             "DATA" => {
-                if !can_process_mail_command(&state) {
-                    state.protocol_errors += 1;
-                    write_reply(stream, 503, required_ehlo_message(&state))?;
-                    continue;
+                match can_process_mail_command(&state, config.inbound_tls_policy) {
+                    Ok(()) => {}
+                    Err(MailCommandRejection::EhloRequired(message)) => {
+                        state.protocol_errors += 1;
+                        write_reply(stream, 503, message)?;
+                        continue;
+                    }
+                    Err(MailCommandRejection::TlsRequired) => {
+                        state.telemetry.require_tls_rejections += 1;
+                        write_reply(stream, 530, "5.7.0 Must issue STARTTLS first")?;
+                        continue;
+                    }
                 }
 
                 if config.postfix_upstream_addr.is_some() {
@@ -388,6 +462,7 @@ where
                         Err(error) => {
                             relay = None;
                             state.protocol_errors += 1;
+                            state.telemetry.relay_temporary_failures += 1;
                             write_reply(
                                 stream,
                                 451,
@@ -417,6 +492,7 @@ where
                         Err(error) => {
                             relay = None;
                             state.protocol_errors += 1;
+                            state.telemetry.relay_temporary_failures += 1;
                             write_reply(
                                 stream,
                                 451,
@@ -441,6 +517,7 @@ where
                         Err(error) => {
                             relay = None;
                             state.protocol_errors += 1;
+                            state.telemetry.relay_temporary_failures += 1;
                             write_reply(
                                 stream,
                                 451,
@@ -459,6 +536,7 @@ where
                         Err(error) => {
                             relay = None;
                             state.protocol_errors += 1;
+                            state.telemetry.relay_temporary_failures += 1;
                             write_reply(
                                 stream,
                                 451,
@@ -492,11 +570,24 @@ where
         command_count: state.command_count,
         protocol_errors: state.protocol_errors,
         tls_negotiated: state.tls_active,
+        inbound_tls_policy: config.inbound_tls_policy,
+        telemetry: state.telemetry,
     })
 }
 
-fn can_process_mail_command(state: &SessionState) -> bool {
-    state.ehlo_seen
+fn can_process_mail_command(
+    state: &SessionState,
+    policy: InboundTlsPolicy,
+) -> Result<(), MailCommandRejection> {
+    if !state.ehlo_seen {
+        return Err(MailCommandRejection::EhloRequired(required_ehlo_message(state)));
+    }
+
+    if policy.requires_tls() && !state.tls_active {
+        return Err(MailCommandRejection::TlsRequired);
+    }
+
+    Ok(())
 }
 
 fn required_ehlo_message(state: &SessionState) -> &'static str {

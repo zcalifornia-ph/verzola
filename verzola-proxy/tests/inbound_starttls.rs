@@ -4,7 +4,8 @@ use std::thread;
 use std::time::Duration;
 
 use verzola_proxy::inbound::{
-    InboundListener, ListenerConfig, NoopTlsUpgrader, SessionSummary, TlsUpgradeError, TlsUpgrader,
+    InboundListener, InboundTlsPolicy, ListenerConfig, NoopTlsUpgrader, SessionSummary,
+    TlsUpgradeError, TlsUpgrader,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -120,6 +121,7 @@ where
             .expect("hard-coded socket address must parse"),
         banner_host: "mx.verzola.test".to_string(),
         advertise_starttls: true,
+        inbound_tls_policy: InboundTlsPolicy::Opportunistic,
         max_line_len: 4096,
         postfix_upstream_addr: None,
     };

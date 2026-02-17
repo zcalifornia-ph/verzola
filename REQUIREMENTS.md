@@ -139,7 +139,7 @@ Acceptance criteria:
 
 ## Units (Main Work Packages)
 
-### [ ] Unit U1: Inbound SMTP Proxy
+### [x] Unit U1: Inbound SMTP Proxy
 Scope:
 - Implement inbound listener, STARTTLS handling, SMTP forwarding, and policy enforcement for inbound traffic.
 
@@ -149,14 +149,14 @@ Interfaces/Dependencies:
 - Metrics/logging sink
 
 Acceptance criteria:
-- [ ] SMTP ingress works on configured ports with STARTTLS upgrade.
-- [ ] Streaming relay to Postfix works without large-buffer memory spikes.
-- [ ] Policy outcomes are deterministic and observable.
+- [x] SMTP ingress works on configured ports with STARTTLS upgrade.
+- [x] Streaming relay to Postfix works without large-buffer memory spikes.
+- [x] Policy outcomes are deterministic and observable.
 
 Deliverables:
-- [ ] `verzola-proxy/src/inbound/*`
-- [ ] Integration tests for inbound flows
-- [ ] Operator docs for inbound mode
+- [x] `verzola-proxy/src/inbound/*`
+- [x] Integration tests for inbound flows
+- [x] Operator docs for inbound mode
 
 #### [x] Bolt U1-B1: Listener and STARTTLS Negotiation
 Subtasks:
@@ -178,15 +178,17 @@ Subtasks:
 - Completed: 2026-02-16
 - Evidence: `powershell -Command "$env:PATH=\"$env:USERPROFILE\\.cargo\\bin;$env:PATH\"; cargo test"` -> `5 passed; 0 failed`.
 
-#### [ ] Bolt U1-B3: Inbound Policy Enforcement and Telemetry
+#### [x] Bolt U1-B3: Inbound Policy Enforcement and Telemetry
 Subtasks:
-- [ ] Design: policy decision points and telemetry schema.
-- [ ] Implement: `opportunistic` and `require-tls` handling for inbound sessions.
-- [ ] Test: policy matrix tests and telemetry assertion tests.
-- [ ] Docs: policy behavior reference for inbound paths.
-- [ ] Review: operational readiness review with SRE.
+- [x] Design: policy decision points and telemetry schema.
+- [x] Implement: `opportunistic` and `require-tls` handling for inbound sessions.
+- [x] Test: policy matrix tests and telemetry assertion tests.
+- [x] Docs: policy behavior reference for inbound paths.
+- [x] Review: operational readiness review with SRE.
+- Completed: 2026-02-17
+- Evidence: `cargo test` -> `inbound_policy_telemetry (4 passed)`, `inbound_starttls (3 passed)`, `inbound_forwarder (2 passed)`.
 
-- [ ] Human validation required: approve Unit U1 plan and acceptance criteria.
+- [x] Human validation required: approve Unit U1 plan and acceptance criteria.
 
 ### [ ] Unit U2: Outbound Smart Relay
 Scope:

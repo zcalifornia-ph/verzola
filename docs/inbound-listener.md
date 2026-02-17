@@ -11,12 +11,14 @@ This document covers the SMTP listener and STARTTLS negotiation slice implemente
 - `bind_addr`: TCP socket address for SMTP ingress.
 - `banner_host`: hostname advertised in the `220` banner and `EHLO` replies.
 - `advertise_starttls`: enables/disables `STARTTLS` capability advertisement.
+- `inbound_tls_policy`: inbound envelope policy (`opportunistic` or `require-tls`).
 - `max_line_len`: guardrail for command and DATA line length.
 
 Validation rules:
 
 - `banner_host` must be non-empty.
 - `max_line_len` must be at least `512`.
+- `require-tls` policy requires `advertise_starttls = true`.
 
 ## STARTTLS State Machine
 
@@ -36,6 +38,8 @@ Protocol guardrails:
 - `STARTTLS` before `EHLO` returns `503`.
 - `STARTTLS` while TLS is already active returns `503`.
 - `MAIL/RCPT/DATA` without required `EHLO` returns `503`.
+
+Policy-specific envelope guardrails are documented in `docs/inbound-policy-telemetry.md`.
 
 ## Certificate Requirements (Production Adapter)
 
