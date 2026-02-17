@@ -8,6 +8,13 @@ VERZOLA is currently in pre-alpha (`0.x`).
 There are no long-term support branches yet.
 Security fixes are applied on `main` and documented in `CHANGELOG.md`.
 
+## Current Security Scope and Limitations
+
+- Implemented and test-covered scope is the inbound proxy slice in `verzola-proxy` (Unit U1 Bolts U1-B1/U1-B2/U1-B3).
+- A production TLS adapter is not yet implemented; current code uses a `TlsUpgrader` interface with `NoopTlsUpgrader` for scaffolding and tests.
+- Outbound relay hardening, control-plane policy tooling, and full observability pipeline remain planned (Units U2-U6 in `REQUIREMENTS.md`).
+- Treat current builds as pre-production and validate controls in an isolated environment before any internet-facing deployment.
+
 ## Reporting a Vulnerability
 
 Use coordinated disclosure. Do not open a public issue for a suspected vulnerability.

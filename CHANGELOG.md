@@ -2,6 +2,28 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.6
+
+### Added or Changed
+- Updated `README.md` version marker from `v0.1.5` to `v0.1.6`.
+- Replaced the outdated `README.md` repository tree with a current repository snapshot and an explicit planned-expansion note aligned to `REQUIREMENTS.md` Units U2-U6.
+- Updated `README.md` quick-start and roadmap sections to include explicit current inbound test coverage (`inbound_starttls`, `inbound_forwarder`, `inbound_policy_telemetry`) plus a dated validation note.
+- Updated `CONTRIBUTING.md` with documentation-sync expectations (`REQUIREMENTS.md`, `README.md`, `CHANGELOG.md`) and explicit inbound test command guidance.
+- Updated `SECURITY.md` to document current pre-alpha security scope/limitations, including pending production TLS adapter work and planned U2-U6 security surface.
+- Added detailed version documentation at `docs/version-v0.1.6-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `repo/target_ci/`
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/temp_test_dir/`
+
 ## v0.1.5
 
 ### Added or Changed
