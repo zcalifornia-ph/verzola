@@ -2,7 +2,7 @@
 name = "verzola-proxy"
 version = "0.1.0"
 edition = "2021"
-description = "Inbound SMTP listener slice for VERZOLA Unit U1 Bolt B1."
+description = "Inbound SMTP proxy slices for VERZOLA Unit U1."
 license = "Apache-2.0"
 
 [lib]
