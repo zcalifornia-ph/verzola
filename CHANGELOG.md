@@ -2,6 +2,35 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.7
+
+### Added or Changed
+- Completed Unit U2 / Bolt U2-B1 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added outbound session orchestration implementation in `verzola-proxy/src/outbound/mod.rs` and exported it through `verzola-proxy/src/lib.rs`.
+- Added outbound orchestration integration coverage in `verzola-proxy/tests/outbound_orchestration.rs` (MX failover success path + temporary-failure path).
+- Added U2-B1 documentation artifacts:
+  - `docs/outbound-relay-configuration.md`
+  - `docs/adr/0004-u2-b1-outbound-session-orchestration.md`
+  - `docs/reviews/u2-b1-protocol-behavior-review.md`
+  - `docs/bolts/u2-b1-traceability.md`
+- Updated `README.md` to `v0.1.7`, synced repository snapshot/quick-start/progress notes for U2-B1, and advanced next actions to U2-B2.
+- Updated `SECURITY.md` and `CONTRIBUTING.md` so current scope and local validation commands include the new outbound orchestration slice.
+- Added detailed version documentation at `docs/version-v0.1.7-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `repo/target_ci/`
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/target_u2_b1/`
+  - `verzola-proxy/target_u2_b1wSSldO/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/temp_test_dir/`
+
 ## v0.1.6
 
 ### Added or Changed

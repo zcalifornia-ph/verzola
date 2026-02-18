@@ -209,13 +209,15 @@ Deliverables:
 - [ ] Contract tests for Postfix retry semantics
 - [ ] Outbound operations guide
 
-#### [ ] Bolt U2-B1: Outbound Session Orchestration
+#### [x] Bolt U2-B1: Outbound Session Orchestration
 Subtasks:
-- [ ] Design: outbound transaction lifecycle and MX selection strategy.
-- [ ] Implement: receive from Postfix and establish remote SMTP sessions.
-- [ ] Test: success path and transient failure handling.
-- [ ] Docs: outbound mode configuration examples.
-- [ ] Review: protocol behavior review with mail ops stakeholders.
+- [x] Design: outbound transaction lifecycle and MX selection strategy.
+- [x] Implement: receive from Postfix and establish remote SMTP sessions.
+- [x] Test: success path and transient failure handling.
+- [x] Docs: outbound mode configuration examples.
+- [x] Review: protocol behavior review with mail ops stakeholders.
+- Completed: 2026-02-18
+- Evidence: `cargo test` -> `11 integration tests passed (including outbound_orchestration: 2 passed; 0 failed)`.
 
 #### [ ] Bolt U2-B2: Delivery Status Contract (`250/4xx`)
 Subtasks:

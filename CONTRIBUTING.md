@@ -22,6 +22,7 @@ Thanks for helping improve VERZOLA.
      - `cargo test --test inbound_starttls`
      - `cargo test --test inbound_forwarder`
      - `cargo test --test inbound_policy_telemetry`
+     - `cargo test --test outbound_orchestration`
 4. Open a pull request with:
    - problem statement
    - approach summary
