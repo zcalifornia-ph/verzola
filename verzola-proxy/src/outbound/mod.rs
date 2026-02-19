@@ -193,6 +193,30 @@ struct SmtpReply {
     lines: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy)]
+enum DeliveryStage {
+    Recipient,
+    DataCommand,
+    DataFinal,
+}
+
+impl DeliveryStage {
+    fn label(self) -> &'static str {
+        match self {
+            DeliveryStage::Recipient => "rcpt",
+            DeliveryStage::DataCommand => "data-command",
+            DeliveryStage::DataFinal => "data-final",
+        }
+    }
+}
+
+#[derive(Debug)]
+struct MappedDeliveryReply {
+    reply: SmtpReply,
+    accepted: bool,
+    temporary_failure: bool,
+}
+
 struct RemoteMxRelay {
     writer: TcpStream,
     reader: BufReader<TcpStream>,
@@ -434,11 +458,16 @@ where
                     }
                 };
 
-                if rcpt_reply.code / 100 == 2 {
+                let mapped_rcpt_reply = map_delivery_reply(DeliveryStage::Recipient, &rcpt_reply);
+                if mapped_rcpt_reply.temporary_failure {
+                    state.temporary_failures += 1;
+                }
+
+                if mapped_rcpt_reply.accepted {
                     state.recipient_count += 1;
                 }
 
-                write_smtp_reply(stream, &rcpt_reply)?;
+                write_smtp_reply(stream, &mapped_rcpt_reply.reply)?;
             }
             "DATA" => {
                 if !state.ehlo_seen {
@@ -482,11 +511,13 @@ where
                     }
                 };
 
-                write_smtp_reply(stream, &data_reply)?;
-
-                if data_reply.code / 100 != 3 {
+                let mapped_data_reply = map_delivery_reply(DeliveryStage::DataCommand, &data_reply);
+                if mapped_data_reply.temporary_failure {
+                    state.temporary_failures += 1;
+                    write_smtp_reply(stream, &mapped_data_reply.reply)?;
                     continue;
                 }
+                write_smtp_reply(stream, &mapped_data_reply.reply)?;
 
                 let final_data_reply =
                     match outbound_relay.relay_data_block(&mut reader, config.max_line_len) {
@@ -503,13 +534,19 @@ where
                         }
                     };
 
-                if final_data_reply.code / 100 == 2 {
+                let mapped_final_data_reply =
+                    map_delivery_reply(DeliveryStage::DataFinal, &final_data_reply);
+                if mapped_final_data_reply.temporary_failure {
+                    state.temporary_failures += 1;
+                }
+
+                if mapped_final_data_reply.accepted {
                     state.staged_mail_from = None;
                     state.recipient_domain = None;
                     state.recipient_count = 0;
                 }
 
-                write_smtp_reply(stream, &final_data_reply)?;
+                write_smtp_reply(stream, &mapped_final_data_reply.reply)?;
             }
             "RSET" => {
                 state.staged_mail_from = None;
@@ -706,6 +743,73 @@ fn split_command(line: &str) -> (String, &str) {
     let verb = parts.next().unwrap_or("").trim().to_ascii_uppercase();
     let argument = parts.next().unwrap_or("").trim();
     (verb, argument)
+}
+
+fn map_delivery_reply(stage: DeliveryStage, remote_reply: &SmtpReply) -> MappedDeliveryReply {
+    match stage {
+        DeliveryStage::Recipient => {
+            if remote_reply.code / 100 == 2 {
+                MappedDeliveryReply {
+                    reply: smtp_reply(250, "2.1.5 Recipient accepted for remote delivery"),
+                    accepted: true,
+                    temporary_failure: false,
+                }
+            } else {
+                deferred_delivery_reply(stage, remote_reply.code)
+            }
+        }
+        DeliveryStage::DataCommand => {
+            if remote_reply.code / 100 == 3 {
+                MappedDeliveryReply {
+                    reply: smtp_reply(354, "End data with <CR><LF>.<CR><LF>"),
+                    accepted: true,
+                    temporary_failure: false,
+                }
+            } else {
+                deferred_delivery_reply(stage, remote_reply.code)
+            }
+        }
+        DeliveryStage::DataFinal => {
+            if remote_reply.code / 100 == 2 {
+                MappedDeliveryReply {
+                    reply: smtp_reply(250, "2.0.0 Message accepted by remote MX"),
+                    accepted: true,
+                    temporary_failure: false,
+                }
+            } else {
+                deferred_delivery_reply(stage, remote_reply.code)
+            }
+        }
+    }
+}
+
+fn deferred_delivery_reply(stage: DeliveryStage, remote_code: u16) -> MappedDeliveryReply {
+    let class = match remote_code / 100 {
+        4 => "remote-transient",
+        5 => "remote-permanent",
+        _ => "remote-unexpected",
+    };
+
+    MappedDeliveryReply {
+        reply: smtp_reply(
+            451,
+            &format!(
+                "4.4.0 Delivery deferred for retry (stage={}, class={}, upstream={})",
+                stage.label(),
+                class,
+                remote_code
+            ),
+        ),
+        accepted: false,
+        temporary_failure: true,
+    }
+}
+
+fn smtp_reply(code: u16, message: &str) -> SmtpReply {
+    SmtpReply {
+        code,
+        lines: vec![format!("{} {}", code, message)],
+    }
 }
 
 fn read_smtp_reply(reader: &mut BufReader<TcpStream>) -> io::Result<SmtpReply> {

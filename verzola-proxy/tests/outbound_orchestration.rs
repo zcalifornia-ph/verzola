@@ -81,7 +81,7 @@ fn orchestrates_outbound_delivery_with_mx_failover() {
     send(&mut stream, "RCPT TO:<bob@example.net>\r\n");
     assert_eq!(
         read_reply(&mut reader),
-        vec!["250 2.1.5 Recipient OK (remote mx)".to_string()]
+        vec!["250 2.1.5 Recipient accepted for remote delivery".to_string()]
     );
 
     send(&mut stream, "DATA\r\n");
@@ -97,7 +97,7 @@ fn orchestrates_outbound_delivery_with_mx_failover() {
 
     assert_eq!(
         read_reply(&mut reader),
-        vec!["250 2.0.0 Queued as ORCH1".to_string()]
+        vec!["250 2.0.0 Message accepted by remote MX".to_string()]
     );
 
     send(&mut stream, "QUIT\r\n");

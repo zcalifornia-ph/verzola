@@ -1,8 +1,8 @@
-# Outbound Relay Configuration (Unit U2 / Bolt U2-B1)
+# Outbound Relay Configuration (Unit U2 / Bolts U2-B1 and U2-B2)
 
 ## Purpose
 
-This document covers outbound session orchestration introduced in `verzola-proxy/src/outbound/mod.rs` for Postfix relayhost mode.
+This document covers outbound relay behavior in `verzola-proxy/src/outbound/mod.rs` for Postfix relayhost mode, including orchestration (U2-B1) and delivery status contract mapping (U2-B2).
 
 ## Reference Topology
 
@@ -38,7 +38,7 @@ Operational fields:
 relayhost = [127.0.0.1]:10025
 ```
 
-## Orchestration Behavior in This Bolt
+## Orchestration Behavior (U2-B1)
 
 - VERZOLA accepts SMTP from Postfix and stages `MAIL FROM` locally.
 - On first `RCPT TO`, VERZOLA extracts recipient domain and resolves MX candidates.
@@ -46,16 +46,50 @@ relayhost = [127.0.0.1]:10025
 - For each candidate, VERZOLA validates remote SMTP readiness (`banner`, `EHLO`, `MAIL`) before relaying `RCPT/DATA`.
 - Resolver/connection/bootstrap failures return `451 4.4.0` to preserve Postfix retries.
 
-Current constraints (U2-B1 scope):
+Current constraint:
 
 - One recipient domain per transaction.
-- Advanced status-contract normalization is deferred to U2-B2.
+
+## Delivery Status Contract (U2-B2)
+
+Postfix-facing delivery outcomes are normalized to deterministic statuses:
+
+- return `250` only after remote acceptance is confirmed,
+- return retry-safe `4xx` (`451`) for remote refusal classes and relay/policy defer paths.
+
+Status mapping matrix:
+
+| Stage | Remote outcome | Postfix-facing reply |
+|---|---|---|
+| `RCPT TO` relay | `2xx` | `250 2.1.5 Recipient accepted for remote delivery` |
+| `RCPT TO` relay | `4xx` or `5xx` (or unexpected non-`2xx`) | `451 4.4.0 Delivery deferred for retry (stage=rcpt, class=..., upstream=...)` |
+| `DATA` command relay | `3xx` | `354 End data with <CR><LF>.<CR><LF>` |
+| `DATA` command relay | non-`3xx` | `451 4.4.0 Delivery deferred for retry (stage=data-command, class=..., upstream=...)` |
+| final `DATA` payload reply | `2xx` | `250 2.0.0 Message accepted by remote MX` |
+| final `DATA` payload reply | `4xx` or `5xx` (or unexpected non-`2xx`) | `451 4.4.0 Delivery deferred for retry (stage=data-final, class=..., upstream=...)` |
+
+Operator expectations:
+
+- Postfix should treat all `451` responses as defer/retry and retain queue ownership.
+- Delivery is considered complete only on final `250` after payload relay.
+- Upstream status classes are intentionally collapsed into retry-safe defer semantics to reduce message-loss risk while policy layering is still in progress.
+
+Troubleshooting matrix:
+
+| Symptom in Postfix logs | Likely cause | Verification path |
+|---|---|---|
+| `451 ... stage=rcpt, class=remote-transient` | remote MX transient issue (`4xx`) | verify remote MX health and DNS/network reachability |
+| `451 ... stage=rcpt, class=remote-permanent` | remote MX permanent refusal (`5xx`), intentionally deferred for safety | inspect recipient/domain policy, remote acceptance rules, and queue retry trend |
+| `451 ... stage=data-command` | remote MX rejected `DATA` preflight | inspect remote SMTP capability/policy and command transcript |
+| `451 ... stage=data-final` | remote MX rejected payload after DATA transfer | inspect content/policy rejection reason and message trace evidence |
+| `451 4.4.0 Outbound MX temporarily unavailable` | resolver/connect/bootstrap failure before RCPT acceptance | verify MX records and remote socket availability |
 
 ## Validation Commands
 
 ```powershell
 cd verzola-proxy
 cargo test --test outbound_orchestration
+cargo test --test outbound_status_contract
 ```
 
 Full suite:

@@ -2,6 +2,35 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.8
+
+### Added or Changed
+- Completed Unit U2 / Bolt U2-B2 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added deterministic outbound delivery status mapping in `verzola-proxy/src/outbound/mod.rs` so Postfix-facing outcomes normalize to `250` on confirmed acceptance and retry-safe `451` on defer paths.
+- Updated outbound integration expectations in `verzola-proxy/tests/outbound_orchestration.rs` to match normalized status contract behavior.
+- Added outbound status-contract integration coverage in `verzola-proxy/tests/outbound_status_contract.rs` for transient and permanent upstream outcome classification.
+- Updated operator-facing outbound contract documentation in `docs/outbound-relay-configuration.md`, including mapping matrix and troubleshooting guidance.
+- Added U2-B2 traceability artifacts:
+  - `docs/adr/0005-u2-b2-delivery-status-contract.md`
+  - `docs/reviews/u2-b2-message-safety-regression-review.md`
+  - `docs/bolts/u2-b2-traceability.md`
+- Updated `README.md` to `v0.1.8` and synced repository snapshot to include the new version documentation file.
+- Added detailed version documentation at `docs/version-v0.1.8-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/target_u2_b1/`
+  - `verzola-proxy/target_u2_b1wSSldO/`
+  - `verzola-proxy/target-u2b2SXi4dh/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/tmp-check/`
+
 ## v0.1.7
 
 ### Added or Changed

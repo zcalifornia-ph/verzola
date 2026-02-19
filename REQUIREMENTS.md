@@ -219,13 +219,15 @@ Subtasks:
 - Completed: 2026-02-18
 - Evidence: `cargo test` -> `11 integration tests passed (including outbound_orchestration: 2 passed; 0 failed)`.
 
-#### [ ] Bolt U2-B2: Delivery Status Contract (`250/4xx`)
+#### [x] Bolt U2-B2: Delivery Status Contract (`250/4xx`)
 Subtasks:
-- [ ] Design: mapping remote outcomes to Postfix-facing statuses.
-- [ ] Implement: deterministic status mapping and failure classification.
-- [ ] Test: contract tests for retry-safe semantics.
-- [ ] Docs: operator expectations and troubleshooting matrix.
-- [ ] Review: regression review against message safety requirements.
+- [x] Design: mapping remote outcomes to Postfix-facing statuses.
+- [x] Implement: deterministic status mapping and failure classification.
+- [x] Test: contract tests for retry-safe semantics.
+- [x] Docs: operator expectations and troubleshooting matrix.
+- [x] Review: regression review against message safety requirements.
+- Completed: 2026-02-19
+- Evidence: `cargo test` -> `13 integration tests passed (including outbound_orchestration: 2 passed; outbound_status_contract: 2 passed; 0 failed)`.
 
 #### [ ] Bolt U2-B3: Outbound TLS Policy Application
 Subtasks:
