@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.5
+    Version: v0.1.10
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -84,7 +84,7 @@
     </li>
     <li><a href="#observability-and-evidence">Observability and Evidence</a></li>
     <li><a href="#security-threat-model">Security Threat Model</a></li>
-    <li><a href="#repository-plan">Repository Plan</a></li>
+    <li><a href="#repository-snapshot">Repository Snapshot</a></li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
@@ -283,78 +283,84 @@ Threats out of scope:
 
 
 
-## Repository Plan
+## Repository Snapshot
 
 ```text
 verzola/
   README.md
-  LICENSE
+  REQUIREMENTS.md
+  CHANGELOG.md
   SECURITY.md
   CONTRIBUTING.md
   CODE_OF_CONDUCT.md
+  LICENSE.txt
 
   docs/
-    architecture.md
-    threat-model.md
-    pq-mode.md
-    postfix-integration.md
-    demo.md
+    inbound-listener.md
+    inbound-postfix-integration.md
+    inbound-policy-telemetry.md
+    outbound-relay-configuration.md
+    version-v0.1.5-docs.md
+    version-v0.1.6-docs.md
+    version-v0.1.7-docs.md
+    version-v0.1.8-docs.md
+    version-v0.1.9-docs.md
+    version-v0.1.10-docs.md
     adr/
-    diagrams/
+      0001-u1-b1-listener-starttls-state-machine.md
+      0002-u1-b2-streaming-forwarder.md
+      0003-u1-b3-inbound-policy-and-telemetry.md
+      0004-u2-b1-outbound-session-orchestration.md
+      0005-u2-b2-delivery-status-contract.md
+      0006-u2-b3-outbound-tls-policy-application.md
+    bolts/
+      u1-b1-traceability.md
+      u1-b2-traceability.md
+      u1-b3-traceability.md
+      u2-b1-traceability.md
+      u2-b2-traceability.md
+      u2-b3-traceability.md
+    reviews/
+      u1-b1-security-interoperability.md
+      u1-b2-performance-review.md
+      u1-b3-operational-readiness.md
+      u2-b1-protocol-behavior-review.md
+      u2-b2-message-safety-regression-review.md
+      u2-b3-downgrade-resistance-review.md
+
   learn/
     u1-b1-inbound-starttls-study-guide.md
     u1-b2-streaming-forwarder-study-guide.md
     u1-b3-inbound-policy-telemetry-study-guide.md
 
-  deploy/
-    compose/
-      inbound-only/
-      outbound-only/
-      full-stack/
-    helm/
-      verzola/
-    ansible/
-      roles/
-
   verzola-proxy/
     Cargo.toml
     src/
+      lib.rs
       main.rs
       inbound/
+        mod.rs
       outbound/
-      tls/
-      smtp/
-      metrics/
-      config/
+        mod.rs
     tests/
-      integration/
+      inbound_starttls.rs
+      inbound_forwarder.rs
+      inbound_policy_telemetry.rs
+      outbound_orchestration.rs
+      outbound_status_contract.rs
+      outbound_tls_policy.rs
 
-  verzola-control/
-    pyproject.toml
-    verzola_control/
-      cli.py
-      policy/
-      render/
-      validate/
-      reports/
-    tests/
-
-  dashboards/
-    grafana/
-      verzola-overview.json
-
-  scripts/
-    build-images.sh
-    run-demo.sh
-    gen-certs.sh
+  repo/
+    images/
+      verzola-screen.png
 ```
 
-Ownership split:
+Planned expansion (remaining after Unit U2 completion): policy/control-plane CLI, TLS capability/PQ layers, observability packaging, and deployment/release hardening as described in `REQUIREMENTS.md` Units U3-U6.
 
-* `verzola-proxy`: SMTP protocol handling, streaming, TLS negotiation, metrics endpoint.
-* `verzola-control`: `verzolactl` policy validation, config generation, and reporting.
-* `deploy`: one-command demo environments.
-* `docs`: architecture and talk-ready technical material.
+Current ownership split:
+
+* `verzola-proxy`: inbound SMTP behavior plus outbound orchestration, status-contract mapping, and outbound TLS policy application.
+* `docs` + `learn`: architecture/review traceability and study assets for completed bolts.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -397,14 +403,23 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
      [Environment]::SetEnvironmentVariable("Path", "$cargoBin;$userPath", "User")
    }
    ```
-3. Run inbound STARTTLS tests:
+3. Run the current proxy test suite (U1-B1/B2/B3 + U2-B1/B2/B3):
    ```sh
    cd verzola-proxy
    cargo test
    ```
-4. Review inbound implementation notes in `docs/inbound-listener.md`, `docs/inbound-postfix-integration.md`, `docs/inbound-policy-telemetry.md`, and ADRs `docs/adr/0001-u1-b1-listener-starttls-state-machine.md` + `docs/adr/0002-u1-b2-streaming-forwarder.md` + `docs/adr/0003-u1-b3-inbound-policy-and-telemetry.md`.
+   Optional targeted suites:
+   ```sh
+   cargo test --test inbound_starttls
+   cargo test --test inbound_forwarder
+   cargo test --test inbound_policy_telemetry
+   cargo test --test outbound_orchestration
+   cargo test --test outbound_status_contract
+   cargo test --test outbound_tls_policy
+   ```
+4. Review implementation notes in `docs/inbound-listener.md`, `docs/inbound-postfix-integration.md`, `docs/inbound-policy-telemetry.md`, `docs/outbound-relay-configuration.md`, and ADRs `docs/adr/0001-u1-b1-listener-starttls-state-machine.md` + `docs/adr/0002-u1-b2-streaming-forwarder.md` + `docs/adr/0003-u1-b3-inbound-policy-and-telemetry.md` + `docs/adr/0004-u2-b1-outbound-session-orchestration.md` + `docs/adr/0005-u2-b2-delivery-status-contract.md` + `docs/adr/0006-u2-b3-outbound-tls-policy-application.md`.
 5. Study the guided walkthroughs in `learn/u1-b1-inbound-starttls-study-guide.md`, `learn/u1-b2-streaming-forwarder-study-guide.md`, and `learn/u1-b3-inbound-policy-telemetry-study-guide.md`.
-6. Continue with Unit U2 Bolt U2-B1 (outbound session orchestration).
+6. Continue with Unit U3 Bolt U3-B1 (schema and validation engine).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -472,15 +487,17 @@ Delivery semantics expected from VERZOLA relay:
 ## Roadmap
 
 - [ ] Phase 0 - Foundation (monorepo scaffold, CI, `verzolactl validate`, demo skeleton)
-- [ ] Phase 1 - Inbound proxy (classical TLS, STARTTLS termination, streaming DATA, metrics/logs)
-- [ ] Phase 2 - Outbound relay (remote MX delivery, correct `250/4xx` behavior, metrics/logs)
+- [x] Phase 1 - Inbound proxy (classical TLS, STARTTLS termination, streaming DATA, metrics/logs)
+- [x] Phase 2 - Outbound relay (remote MX delivery, correct `250/4xx` behavior, metrics/logs)
 - [ ] Phase 3 - Policy-as-code and guardrails (domain rules, optional DNS hint, docs/diagrams)
 - [ ] Phase 4 - PQ lab mode (hybrid/PQ preference with experimental TLS stack)
 - [ ] Phase 5 - Hardening and release polish (least privilege, security docs, reproducible demo, tagged release)
 
-Progress note: Unit U1 Bolts U1-B1, U1-B2, and U1-B3 are complete in `REQUIREMENTS.md`, with listener + streaming relay + inbound policy/telemetry implementation, integration tests, and docs landed (`verzola-proxy/src/inbound/*`, `verzola-proxy/tests/inbound_starttls.rs`, `verzola-proxy/tests/inbound_forwarder.rs`, `verzola-proxy/tests/inbound_policy_telemetry.rs`, `docs/*`).
+Progress note: Unit U1 and Unit U2 are now complete in `REQUIREMENTS.md`, including outbound TLS policy application (`U2-B3`) with per-domain overrides and strict defer semantics (`verzola-proxy/src/outbound/mod.rs`, `verzola-proxy/tests/outbound_tls_policy.rs`, `docs/adr/0006-u2-b3-outbound-tls-policy-application.md`, `docs/reviews/u2-b3-downgrade-resistance-review.md`, `docs/bolts/u2-b3-traceability.md`).
 
 Learning note: step-by-step learning assets for Unit U1 are available at `learn/u1-b1-inbound-starttls-study-guide.md`, `learn/u1-b2-streaming-forwarder-study-guide.md`, and `learn/u1-b3-inbound-policy-telemetry-study-guide.md`.
+
+Validation note (2026-02-20): `cargo test` passes for current implemented scope (`2 + 4 + 3 + 2 + 2 + 6` integration tests across inbound and outbound suites, including outbound TLS policy coverage).
 
 See the [open issues](https://github.com/zcalifornia-ph/verzola/issues) for proposed features and known gaps.
 
@@ -507,10 +524,10 @@ Demo flow:
 
 ## Immediate Next Actions
 
-1. Implement Unit U2 Bolt U2-B1 outbound session orchestration.
-2. Add production TLS adapter wiring (`TlsUpgrader`) with certificate loading, secure defaults, and clear failure mapping.
-3. Add CI checks to run proxy lint/test gates on every pull request.
-4. Add inbound interoperability checks using a real SMTP client matrix (for example Postfix and swaks).
+1. Implement Unit U3 Bolt U3-B1 schema + validation engine for `verzolactl`.
+2. Lock support-baseline decisions from `REQUIREMENTS.md` clarifications (minimum Postfix version and approved PQ experiment TLS stack).
+3. Add production TLS adapter wiring with certificate loading, secure defaults, and clear failure mapping for inbound and outbound paths.
+4. Add CI checks and SMTP interoperability matrix runs (for example Postfix and swaks).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
