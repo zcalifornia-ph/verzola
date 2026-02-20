@@ -2,6 +2,41 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.10
+
+### Added or Changed
+- Updated `README.md` version marker from `v0.1.9` to `v0.1.10` and aligned roadmap checkboxes with current milestone reality (`Phase 1` and `Phase 2` complete).
+- Updated `README.md` immediate next actions to call out pending production TLS adapter wiring for both inbound and outbound paths.
+- Updated `CONTRIBUTING.md` validation guidance to include outbound targeted suites for `outbound_status_contract` and `outbound_tls_policy`.
+- Updated `SECURITY.md` scope/limitations to reflect completed Unit U2 (`U2-B1`, `U2-B2`, `U2-B3`) and to map pending security surface to Units U3-U6.
+- Revalidated implemented proxy scope on `2026-02-20` with `cargo test` in `verzola-proxy` (`2 + 4 + 3 + 2 + 2 + 6` integration tests passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.10-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/target_u2_b1/`
+  - `verzola-proxy/target_u2_b1wSSldO/`
+  - `verzola-proxy/target_u2_b3_rebuild/`
+  - `verzola-proxy/target_u2_b3_rebuildrMqWaL/`
+  - `verzola-proxy/target-u2b2SXi4dh/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/temp_test_dir/`
+  - `verzola-proxy/rmetaB2f4iR/`
+  - `verzola-proxy/rmetancZsdL/`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.c67070f154ac956c-cgu.0.rcgu.o`
+  - `verzola-proxy/rename_probe.tmp`
+  - `repo/target_ci/`
+  - `repo/target_ci_u2_b3/`
+  - `repo/target_ci_u2_b3RfMHAM/`
+
 ## v0.1.9
 
 ### Added or Changed

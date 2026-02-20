@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.9
+    Version: v0.1.10
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -305,6 +305,7 @@ verzola/
     version-v0.1.7-docs.md
     version-v0.1.8-docs.md
     version-v0.1.9-docs.md
+    version-v0.1.10-docs.md
     adr/
       0001-u1-b1-listener-starttls-state-machine.md
       0002-u1-b2-streaming-forwarder.md
@@ -486,8 +487,8 @@ Delivery semantics expected from VERZOLA relay:
 ## Roadmap
 
 - [ ] Phase 0 - Foundation (monorepo scaffold, CI, `verzolactl validate`, demo skeleton)
-- [ ] Phase 1 - Inbound proxy (classical TLS, STARTTLS termination, streaming DATA, metrics/logs)
-- [ ] Phase 2 - Outbound relay (remote MX delivery, correct `250/4xx` behavior, metrics/logs)
+- [x] Phase 1 - Inbound proxy (classical TLS, STARTTLS termination, streaming DATA, metrics/logs)
+- [x] Phase 2 - Outbound relay (remote MX delivery, correct `250/4xx` behavior, metrics/logs)
 - [ ] Phase 3 - Policy-as-code and guardrails (domain rules, optional DNS hint, docs/diagrams)
 - [ ] Phase 4 - PQ lab mode (hybrid/PQ preference with experimental TLS stack)
 - [ ] Phase 5 - Hardening and release polish (least privilege, security docs, reproducible demo, tagged release)
@@ -525,7 +526,7 @@ Demo flow:
 
 1. Implement Unit U3 Bolt U3-B1 schema + validation engine for `verzolactl`.
 2. Lock support-baseline decisions from `REQUIREMENTS.md` clarifications (minimum Postfix version and approved PQ experiment TLS stack).
-3. Add production TLS adapter wiring with certificate loading, secure defaults, and clear failure mapping for outbound paths.
+3. Add production TLS adapter wiring with certificate loading, secure defaults, and clear failure mapping for inbound and outbound paths.
 4. Add CI checks and SMTP interoperability matrix runs (for example Postfix and swaks).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
