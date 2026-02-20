@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+use std::collections::HashSet;
 use std::fmt::{Display, Formatter};
 use std::io::{self, BufRead, BufReader, ErrorKind, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
@@ -7,10 +8,52 @@ use std::thread;
 
 pub const DEFAULT_MAX_LINE_LEN: usize = 4096;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum OutboundTlsPolicy {
+    Opportunistic,
+    RequireTls,
+}
+
+impl OutboundTlsPolicy {
+    fn requires_tls(self) -> bool {
+        matches!(self, Self::RequireTls)
+    }
+}
+
+impl Default for OutboundTlsPolicy {
+    fn default() -> Self {
+        Self::Opportunistic
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OutboundDomainTlsPolicy {
+    pub recipient_domain: String,
+    pub policy: OutboundTlsPolicy,
+}
+
+impl OutboundDomainTlsPolicy {
+    pub fn new(recipient_domain: impl Into<String>, policy: OutboundTlsPolicy) -> io::Result<Self> {
+        let recipient_domain = normalize_domain(recipient_domain.into()).ok_or_else(|| {
+            io::Error::new(
+                ErrorKind::InvalidInput,
+                "outbound domain policy requires a non-empty recipient domain",
+            )
+        })?;
+
+        Ok(Self {
+            recipient_domain,
+            policy,
+        })
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct OutboundListenerConfig {
     pub bind_addr: SocketAddr,
     pub banner_host: String,
+    pub outbound_tls_policy: OutboundTlsPolicy,
+    pub per_domain_tls_policies: Vec<OutboundDomainTlsPolicy>,
     pub max_line_len: usize,
 }
 
@@ -30,6 +73,26 @@ impl OutboundListenerConfig {
             ));
         }
 
+        let mut seen_domains = HashSet::new();
+        for rule in &self.per_domain_tls_policies {
+            let normalized_domain = normalize_domain(rule.recipient_domain.clone()).ok_or_else(|| {
+                io::Error::new(
+                    ErrorKind::InvalidInput,
+                    "per_domain_tls_policies contains an empty recipient domain",
+                )
+            })?;
+
+            if !seen_domains.insert(normalized_domain.clone()) {
+                return Err(io::Error::new(
+                    ErrorKind::InvalidInput,
+                    format!(
+                        "per_domain_tls_policies contains duplicate domain rule: {}",
+                        normalized_domain
+                    ),
+                ));
+            }
+        }
+
         Ok(())
     }
 }
@@ -41,6 +104,8 @@ impl Default for OutboundListenerConfig {
                 .parse()
                 .expect("default outbound socket address must parse"),
             banner_host: "localhost".to_string(),
+            outbound_tls_policy: OutboundTlsPolicy::default(),
+            per_domain_tls_policies: Vec::new(),
             max_line_len: DEFAULT_MAX_LINE_LEN,
         }
     }
@@ -113,6 +178,10 @@ pub struct OutboundSessionSummary {
     pub remote_session_established: bool,
     pub selected_mx: Option<String>,
     pub selected_recipient_domain: Option<String>,
+    pub effective_tls_policy: Option<OutboundTlsPolicy>,
+    pub tls_negotiated: bool,
+    pub opportunistic_tls_fallbacks: usize,
+    pub policy_deferred_failures: usize,
 }
 
 pub struct OutboundListener<R>
@@ -182,6 +251,10 @@ struct SessionState {
     remote_session_established: bool,
     selected_mx: Option<String>,
     selected_recipient_domain: Option<String>,
+    effective_tls_policy: Option<OutboundTlsPolicy>,
+    tls_negotiated: bool,
+    opportunistic_tls_fallbacks: usize,
+    policy_deferred_failures: usize,
     staged_mail_from: Option<String>,
     recipient_domain: Option<String>,
     recipient_count: usize,
@@ -221,10 +294,76 @@ struct RemoteMxRelay {
     writer: TcpStream,
     reader: BufReader<TcpStream>,
     exchange: String,
+    tls_negotiated: bool,
+    opportunistic_fallback_used: bool,
 }
 
 impl RemoteMxRelay {
-    fn connect(candidate: &MxCandidate, ehlo_host: &str, mail_command: &str) -> io::Result<Self> {
+    fn connect(
+        candidate: &MxCandidate,
+        ehlo_host: &str,
+        mail_command: &str,
+        tls_policy: OutboundTlsPolicy,
+    ) -> io::Result<Self> {
+        let (mut writer, mut reader, starttls_advertised) = Self::open_and_greet(candidate, ehlo_host)?;
+
+        if starttls_advertised {
+            match Self::negotiate_starttls(&mut writer, &mut reader, ehlo_host) {
+                Ok(()) => {
+                    Self::send_mail_command(&mut writer, &mut reader, mail_command)?;
+                    return Ok(Self {
+                        writer,
+                        reader,
+                        exchange: candidate.exchange.clone(),
+                        tls_negotiated: true,
+                        opportunistic_fallback_used: false,
+                    });
+                }
+                Err(starttls_error) => {
+                    if tls_policy.requires_tls() {
+                        return Err(starttls_error);
+                    }
+                }
+            }
+
+            let (mut fallback_writer, mut fallback_reader, _) =
+                Self::open_and_greet(candidate, ehlo_host)?;
+            Self::send_mail_command(&mut fallback_writer, &mut fallback_reader, mail_command)?;
+
+            return Ok(Self {
+                writer: fallback_writer,
+                reader: fallback_reader,
+                exchange: candidate.exchange.clone(),
+                tls_negotiated: false,
+                opportunistic_fallback_used: true,
+            });
+        }
+
+        if tls_policy.requires_tls() {
+            return Err(io::Error::new(
+                ErrorKind::PermissionDenied,
+                format!(
+                    "candidate {} does not advertise STARTTLS and policy requires TLS",
+                    candidate.exchange
+                ),
+            ));
+        }
+
+        Self::send_mail_command(&mut writer, &mut reader, mail_command)?;
+
+        Ok(Self {
+            writer,
+            reader,
+            exchange: candidate.exchange.clone(),
+            tls_negotiated: false,
+            opportunistic_fallback_used: false,
+        })
+    }
+
+    fn open_and_greet(
+        candidate: &MxCandidate,
+        ehlo_host: &str,
+    ) -> io::Result<(TcpStream, BufReader<TcpStream>, bool)> {
         let mut writer = TcpStream::connect(candidate.address)?;
         let mut reader = BufReader::new(writer.try_clone()?);
 
@@ -253,8 +392,52 @@ impl RemoteMxRelay {
             ));
         }
 
-        write_command_line(&mut writer, mail_command)?;
-        let mail_reply = read_smtp_reply(&mut reader)?;
+        Ok((writer, reader, reply_advertises_starttls(&ehlo_reply)))
+    }
+
+    fn negotiate_starttls(
+        writer: &mut TcpStream,
+        reader: &mut BufReader<TcpStream>,
+        ehlo_host: &str,
+    ) -> io::Result<()> {
+        write_command_line(writer, "STARTTLS")?;
+        let starttls_reply = read_smtp_reply(reader)?;
+        if starttls_reply.code / 100 != 2 {
+            return Err(io::Error::new(
+                ErrorKind::PermissionDenied,
+                format!(
+                    "remote MX STARTTLS was non-2xx ({}): {}",
+                    starttls_reply.code,
+                    starttls_reply.lines.join(" | ")
+                ),
+            ));
+        }
+
+        // TLS adapter wiring is tracked in a later bolt; this STARTTLS handshake
+        // boundary is the policy decision point for outbound routing behavior.
+        write_command_line(writer, &format!("EHLO {}", ehlo_host))?;
+        let ehlo_after_tls = read_smtp_reply(reader)?;
+        if ehlo_after_tls.code / 100 != 2 {
+            return Err(io::Error::new(
+                ErrorKind::PermissionDenied,
+                format!(
+                    "remote MX EHLO after STARTTLS was non-2xx ({}): {}",
+                    ehlo_after_tls.code,
+                    ehlo_after_tls.lines.join(" | ")
+                ),
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn send_mail_command(
+        writer: &mut TcpStream,
+        reader: &mut BufReader<TcpStream>,
+        mail_command: &str,
+    ) -> io::Result<()> {
+        write_command_line(writer, mail_command)?;
+        let mail_reply = read_smtp_reply(reader)?;
         if mail_reply.code / 100 != 2 {
             return Err(io::Error::new(
                 ErrorKind::ConnectionAborted,
@@ -266,11 +449,7 @@ impl RemoteMxRelay {
             ));
         }
 
-        Ok(Self {
-            writer,
-            reader,
-            exchange: candidate.exchange.clone(),
-        })
+        Ok(())
     }
 
     fn relay_command(&mut self, command_line: &str) -> io::Result<SmtpReply> {
@@ -380,6 +559,9 @@ where
                 state.recipient_domain = None;
                 state.recipient_count = 0;
                 state.selected_mx = None;
+                state.selected_recipient_domain = None;
+                state.effective_tls_policy = None;
+                state.tls_negotiated = false;
                 relay = None;
 
                 write_reply(stream, 250, "2.1.0 Sender staged for outbound relay")?;
@@ -435,11 +617,20 @@ where
                     Err(error) => {
                         relay = None;
                         state.temporary_failures += 1;
-                        write_reply(
-                            stream,
-                            451,
-                            &format!("4.4.0 Outbound MX temporarily unavailable: {}", error),
-                        )?;
+                        if error.kind() == ErrorKind::PermissionDenied {
+                            state.policy_deferred_failures += 1;
+                            write_reply(
+                                stream,
+                                451,
+                                &format!("4.7.5 Outbound TLS policy defer: {}", error),
+                            )?;
+                        } else {
+                            write_reply(
+                                stream,
+                                451,
+                                &format!("4.4.0 Outbound MX temporarily unavailable: {}", error),
+                            )?;
+                        }
                         continue;
                     }
                 };
@@ -615,7 +806,33 @@ where
         remote_session_established: state.remote_session_established,
         selected_mx: state.selected_mx,
         selected_recipient_domain: state.selected_recipient_domain,
+        effective_tls_policy: state.effective_tls_policy,
+        tls_negotiated: state.tls_negotiated,
+        opportunistic_tls_fallbacks: state.opportunistic_tls_fallbacks,
+        policy_deferred_failures: state.policy_deferred_failures,
     })
+}
+
+fn resolve_outbound_tls_policy(
+    config: &OutboundListenerConfig,
+    recipient_domain: &str,
+) -> OutboundTlsPolicy {
+    let normalized_recipient_domain =
+        match normalize_domain(recipient_domain.to_string()) {
+            Some(domain) => domain,
+            None => return config.outbound_tls_policy,
+        };
+
+    config
+        .per_domain_tls_policies
+        .iter()
+        .find(|rule| {
+            normalize_domain(rule.recipient_domain.clone())
+                .map(|normalized_rule_domain| normalized_rule_domain == normalized_recipient_domain)
+                .unwrap_or(false)
+        })
+        .map(|rule| rule.policy)
+        .unwrap_or(config.outbound_tls_policy)
 }
 
 fn ensure_remote_relay<'a, R>(
@@ -631,6 +848,9 @@ where
 {
     if relay.is_none() {
         state.resolver_lookups += 1;
+        let effective_tls_policy = resolve_outbound_tls_policy(config, recipient_domain);
+        state.effective_tls_policy = Some(effective_tls_policy);
+        state.tls_negotiated = false;
 
         let mut candidates = resolver
             .resolve(recipient_domain)
@@ -649,17 +869,26 @@ where
         for candidate in candidates {
             state.mx_candidates_attempted += 1;
 
-            match RemoteMxRelay::connect(&candidate, &config.banner_host, mail_command) {
+            match RemoteMxRelay::connect(
+                &candidate,
+                &config.banner_host,
+                mail_command,
+                effective_tls_policy,
+            ) {
                 Ok(outbound_relay) => {
                     state.remote_session_established = true;
                     state.selected_mx = Some(outbound_relay.exchange.clone());
                     state.selected_recipient_domain = Some(recipient_domain.to_string());
+                    state.tls_negotiated = outbound_relay.tls_negotiated;
+                    if outbound_relay.opportunistic_fallback_used {
+                        state.opportunistic_tls_fallbacks += 1;
+                    }
                     *relay = Some(outbound_relay);
                     break;
                 }
                 Err(error) => {
                     last_error = Some(io::Error::new(
-                        ErrorKind::ConnectionAborted,
+                        error.kind(),
                         format!("candidate {} failed: {}", candidate.exchange, error),
                     ));
                 }
@@ -685,6 +914,45 @@ where
     }
 }
 
+fn reply_advertises_starttls(reply: &SmtpReply) -> bool {
+    reply
+        .lines
+        .iter()
+        .filter_map(|line| smtp_reply_capability(line))
+        .any(|capability| {
+            capability.eq_ignore_ascii_case("STARTTLS")
+                || capability
+                    .to_ascii_uppercase()
+                    .starts_with("STARTTLS ")
+        })
+}
+
+fn smtp_reply_capability(line: &str) -> Option<&str> {
+    let line_bytes = line.as_bytes();
+    if line_bytes.len() < 4 {
+        return None;
+    }
+
+    if !line_bytes[..3].iter().all(|byte| byte.is_ascii_digit()) {
+        return None;
+    }
+
+    if line_bytes[3] != b' ' && line_bytes[3] != b'-' {
+        return None;
+    }
+
+    Some(line[4..].trim())
+}
+
+fn normalize_domain(raw_domain: String) -> Option<String> {
+    let domain = raw_domain.trim().trim_matches('.').to_ascii_lowercase();
+    if domain.is_empty() {
+        None
+    } else {
+        Some(domain)
+    }
+}
+
 fn parse_recipient_domain(argument: &str) -> Option<String> {
     let trimmed = argument.trim();
     if trimmed.is_empty() {
@@ -702,11 +970,7 @@ fn parse_recipient_domain(argument: &str) -> Option<String> {
     let (_, domain) = address.rsplit_once('@')?;
 
     let domain = domain.trim().trim_end_matches('>');
-    if domain.is_empty() {
-        None
-    } else {
-        Some(domain.to_ascii_lowercase())
-    }
+    normalize_domain(domain.to_string())
 }
 
 fn is_mail_from_argument(argument: &str) -> bool {

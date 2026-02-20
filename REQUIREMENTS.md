@@ -190,7 +190,7 @@ Subtasks:
 
 - [x] Human validation required: approve Unit U1 plan and acceptance criteria.
 
-### [ ] Unit U2: Outbound Smart Relay
+### [x] Unit U2: Outbound Smart Relay
 Scope:
 - Implement outbound relay path from Postfix to remote MX with strict `250/4xx` semantics.
 
@@ -200,14 +200,14 @@ Interfaces/Dependencies:
 - Policy engine outputs
 
 Acceptance criteria:
-- [ ] `250` is returned only after confirmed remote acceptance.
-- [ ] `4xx` is returned on temporary/policy failures requiring retry.
-- [ ] Outbound mode is configurable independently from inbound mode.
+- [x] `250` is returned only after confirmed remote acceptance.
+- [x] `4xx` is returned on temporary/policy failures requiring retry.
+- [x] Outbound mode is configurable independently from inbound mode.
 
 Deliverables:
-- [ ] `verzola-proxy/src/outbound/*`
-- [ ] Contract tests for Postfix retry semantics
-- [ ] Outbound operations guide
+- [x] `verzola-proxy/src/outbound/*`
+- [x] Contract tests for Postfix retry semantics
+- [x] Outbound operations guide
 
 #### [x] Bolt U2-B1: Outbound Session Orchestration
 Subtasks:
@@ -229,15 +229,17 @@ Subtasks:
 - Completed: 2026-02-19
 - Evidence: `cargo test` -> `13 integration tests passed (including outbound_orchestration: 2 passed; outbound_status_contract: 2 passed; 0 failed)`.
 
-#### [ ] Bolt U2-B3: Outbound TLS Policy Application
+#### [x] Bolt U2-B3: Outbound TLS Policy Application
 Subtasks:
-- [ ] Design: outbound policy evaluation order and fallback logic.
-- [ ] Implement: `opportunistic`, `require-tls`, and per-domain rules.
-- [ ] Test: policy coverage tests for supported modes.
-- [ ] Docs: outbound policy examples including defer behavior.
-- [ ] Review: security review for downgrade resistance.
+- [x] Design: outbound policy evaluation order and fallback logic.
+- [x] Implement: `opportunistic`, `require-tls`, and per-domain rules.
+- [x] Test: policy coverage tests for supported modes.
+- [x] Docs: outbound policy examples including defer behavior.
+- [x] Review: security review for downgrade resistance.
+- Completed: 2026-02-20
+- Evidence: `cargo test` -> all suites passed, including `outbound_tls_policy` (6 passed), `outbound_orchestration` (2 passed), and `outbound_status_contract` (2 passed).
 
-- [ ] Human validation required: approve Unit U2 plan and acceptance criteria.
+- [x] Human validation required: approve Unit U2 plan and acceptance criteria.
 
 ### [ ] Unit U3: Policy and Control Plane (`verzolactl`)
 Scope:

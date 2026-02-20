@@ -190,6 +190,7 @@ where
             .expect("hard-coded socket address must parse"),
         banner_host: "relay.verzola.test".to_string(),
         max_line_len: 4096,
+        ..OutboundListenerConfig::default()
     };
 
     let listener = OutboundListener::bind(config, resolver)

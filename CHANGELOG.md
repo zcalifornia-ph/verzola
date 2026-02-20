@@ -2,6 +2,42 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.9
+
+### Added or Changed
+- Completed Unit U2 / Bolt U2-B3 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Marked Unit U2 acceptance criteria and deliverables complete in `REQUIREMENTS.md` after U2-B3 validation.
+- Finalized outbound TLS policy application in `verzola-proxy/src/outbound/mod.rs`:
+  - global/per-domain policy model (`opportunistic`, `require-tls`),
+  - STARTTLS capability detection and opportunistic fallback path,
+  - strict policy defer mapping (`451 4.7.5`) for downgrade resistance,
+  - policy/fallback summary fields for outbound session telemetry.
+- Fixed outbound test suite compilation for new config fields in:
+  - `verzola-proxy/tests/outbound_orchestration.rs`
+  - `verzola-proxy/tests/outbound_status_contract.rs`
+- Added outbound TLS policy integration coverage in `verzola-proxy/tests/outbound_tls_policy.rs` (6 tests covering mode behavior, fallback, strict defers, per-domain overrides, and duplicate-rule validation).
+- Updated outbound operator docs in `docs/outbound-relay-configuration.md` with policy evaluation order, downgrade/defer matrix, and validation commands.
+- Added U2-B3 traceability artifacts:
+  - `docs/adr/0006-u2-b3-outbound-tls-policy-application.md`
+  - `docs/reviews/u2-b3-downgrade-resistance-review.md`
+  - `docs/bolts/u2-b3-traceability.md`
+- Updated `README.md` to `v0.1.9` and synchronized repository snapshot/progress/next-actions for completed Unit U2.
+- Added detailed version documentation at `docs/version-v0.1.9-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-proxy/target/`
+  - `repo/target_ci_u2_b3/`
+  - `repo/target_ci_u2_b3RfMHAM/`
+  - `verzola-proxy/target_u2_b3_rebuild/`
+  - `verzola-proxy/target_u2_b3_rebuildrMqWaL/`
+  - `verzola-proxy/.tmpArurTo.temp-archive/`
+  - `verzola-proxy/rmetaB2f4iR/`
+  - `verzola-proxy/rmetancZsdL/`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.c67070f154ac956c-cgu.0.rcgu.o`
+  - `verzola-proxy/rename_probe.tmp`
+
 ## v0.1.8
 
 ### Added or Changed
