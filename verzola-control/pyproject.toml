@@ -16,6 +16,7 @@ verzolactl = "verzola_control.cli:main"
 packages = [
   "verzola_control",
   "verzola_control.policy",
+  "verzola_control.report",
   "verzola_control.render",
   "verzola_control.validate",
 ]

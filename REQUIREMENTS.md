@@ -241,7 +241,7 @@ Subtasks:
 
 - [x] Human validation required: approve Unit U2 plan and acceptance criteria.
 
-### [ ] Unit U3: Policy and Control Plane (`verzolactl`)
+### [x] Unit U3: Policy and Control Plane (`verzolactl`)
 Scope:
 - Build config schema validation, effective config rendering, and policy reporting workflows.
 
@@ -253,12 +253,12 @@ Interfaces/Dependencies:
 Acceptance criteria:
 - [x] Invalid policies fail validation with actionable diagnostics.
 - [x] Rendered config is deterministic and environment-aware.
-- [ ] Reports summarize domain policy posture and detected gaps.
+- [x] Reports summarize domain policy posture and detected gaps.
 
 Deliverables:
 - [x] `verzola-control/verzola_control/policy/*`
 - [x] `verzola-control/verzola_control/validate/*`
-- [ ] CLI docs and examples
+- [x] CLI docs and examples
 
 #### [x] Bolt U3-B1: Schema and Validation Engine
 Subtasks:
@@ -280,15 +280,17 @@ Subtasks:
 - Completed: 2026-02-21
 - Evidence: `python -B -m unittest discover -s tests -v` (run in `verzola-control`) -> `15 passed; 0 failed`.
 
-#### [ ] Bolt U3-B3: Policy Reports and CLI UX
+#### [x] Bolt U3-B3: Policy Reports and CLI UX
 Subtasks:
-- [ ] Design: report sections and severity levels.
-- [ ] Implement: CLI commands for validate/render/report.
-- [ ] Test: CLI integration tests with sample repos.
-- [ ] Docs: operator workflow from policy edit to deploy.
-- [ ] Review: usability review for actionable errors.
+- [x] Design: report sections and severity levels.
+- [x] Implement: CLI commands for validate/render/report.
+- [x] Test: CLI integration tests with sample repos.
+- [x] Docs: operator workflow from policy edit to deploy.
+- [x] Review: usability review for actionable errors.
+- Completed: 2026-02-21
+- Evidence: `python -B -m unittest discover -s tests -v` (run in `verzola-control`) -> `20 passed; 0 failed`.
 
-- [ ] Human validation required: approve Unit U3 plan and acceptance criteria.
+- [x] Human validation required: approve Unit U3 plan and acceptance criteria.
 
 ### [ ] Unit U4: TLS Capability Detection and PQ Mode
 Scope:

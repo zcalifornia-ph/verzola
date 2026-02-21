@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 from typing import Sequence
 
+from .report.engine import SUPPORTED_REPORT_FORMATS, report_policy_file
 from .render.engine import SUPPORTED_ENVIRONMENTS, render_policy_file
 from .validate.engine import PolicyValidationError, validate_policy_file
 
@@ -55,6 +56,37 @@ def build_parser() -> argparse.ArgumentParser:
         help="Disable unknown-field rejection.",
     )
 
+    report_parser = subparsers.add_parser(
+        "report",
+        help="Generate policy posture summary and detected-gap report.",
+    )
+    report_parser.add_argument(
+        "policy_file",
+        help="Path to policy config file (.yaml/.yml/.toml).",
+    )
+    report_parser.add_argument(
+        "--environment",
+        default="dev",
+        choices=SUPPORTED_ENVIRONMENTS,
+        help="Deployment environment context for policy reporting.",
+    )
+    report_parser.add_argument(
+        "--format",
+        default="text",
+        choices=SUPPORTED_REPORT_FORMATS,
+        help="Report output format.",
+    )
+    report_parser.add_argument(
+        "--output",
+        default="-",
+        help="Output path for rendered report ('-' prints to stdout).",
+    )
+    report_parser.add_argument(
+        "--no-strict",
+        action="store_true",
+        help="Disable unknown-field rejection.",
+    )
+
     return parser
 
 
@@ -68,6 +100,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _run_render(
             policy_file=args.policy_file,
             environment=args.environment,
+            output_path=args.output,
+            strict=not args.no_strict,
+        )
+    if args.command == "report":
+        return _run_report(
+            policy_file=args.policy_file,
+            environment=args.environment,
+            output_format=args.format,
             output_path=args.output,
             strict=not args.no_strict,
         )
@@ -131,5 +171,50 @@ def _run_render(
     print(
         f"{path} rendered successfully for environment '{environment}' "
         f"({mode} mode) -> {destination}"
+    )
+    return 0
+
+
+def _run_report(
+    *,
+    policy_file: str,
+    environment: str,
+    output_format: str,
+    output_path: str,
+    strict: bool,
+) -> int:
+    path = Path(policy_file)
+    try:
+        report_output = report_policy_file(
+            path,
+            environment=environment,
+            strict=strict,
+            output_format=output_format,
+        )
+    except FileNotFoundError:
+        print(
+            f"{path} [<io>] policy file does not exist",
+            file=sys.stderr,
+        )
+        return 1
+    except PolicyValidationError as error:
+        for diagnostic in error.diagnostics:
+            print(diagnostic.render(), file=sys.stderr)
+        return 1
+    except ValueError as error:
+        print(f"{path} [<report>] {error}", file=sys.stderr)
+        return 1
+
+    if output_path == "-":
+        print(report_output)
+        return 0
+
+    destination = Path(output_path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(report_output + "\n", encoding="utf-8")
+    mode = "strict" if strict else "non-strict"
+    print(
+        f"{path} report generated successfully for environment '{environment}' "
+        f"as {output_format} ({mode} mode) -> {destination}"
     )
     return 0

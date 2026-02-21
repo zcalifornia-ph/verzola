@@ -31,6 +31,7 @@ Thanks for helping improve VERZOLA.
    - optional CLI check:
      - `python -m verzola_control validate <policy-file.yaml>`
      - `python -m verzola_control render <policy-file.yaml> --environment dev --output -`
+     - `python -m verzola_control report <policy-file.yaml> --environment dev --format text --output -`
 5. Open a pull request with:
    - problem statement
    - approach summary

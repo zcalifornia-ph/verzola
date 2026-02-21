@@ -2,6 +2,34 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.13
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B3 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Marked Unit U3 acceptance criteria, deliverables, and unit-level validation gate complete in `REQUIREMENTS.md`.
+- Added control-plane policy reporting implementation under `verzola-control`:
+  - `verzola-control/verzola_control/report/engine.py`
+  - `verzola-control/verzola_control/report/__init__.py`
+- Extended control-plane CLI with `verzolactl report` support (`--environment`, `--format`, `--output`, strict/non-strict parity) in:
+  - `verzola-control/verzola_control/cli.py`
+- Updated package metadata for report module export:
+  - `verzola-control/pyproject.toml`
+- Added report engine + CLI integration coverage (including sample repo-style path test):
+  - `verzola-control/tests/test_report_engine.py`
+- Added Unit U3-B3 documentation and traceability artifacts:
+  - `docs/policy-reporting-cli.md`
+  - `docs/adr/0009-u3-b3-policy-reporting-cli-ux.md`
+  - `docs/reviews/u3-b3-cli-usability-review.md`
+  - `docs/bolts/u3-b3-traceability.md`
+- Updated `README.md` version marker from `v0.1.12` to `v0.1.13` and synchronized quick start, repository snapshot, progress notes, validation notes, and next actions for Unit U3 closure.
+- Updated `CONTRIBUTING.md` and `SECURITY.md` to reflect report workflow and Unit U4-U6 forward scope.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`20` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.13-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-control/.tmp-tests/`
+
 ## v0.1.12
 
 ### Added or Changed
