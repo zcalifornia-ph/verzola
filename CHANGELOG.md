@@ -2,6 +2,33 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.12
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B2 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added deterministic, environment-aware renderer implementation under `verzola-control`:
+  - `verzola-control/verzola_control/render/engine.py`
+  - `verzola-control/verzola_control/render/__init__.py`
+- Extended control-plane CLI with `verzolactl render` support (`--environment`, `--output`, strict/non-strict parity with validation) in:
+  - `verzola-control/verzola_control/cli.py`
+- Updated package metadata for renderer module export:
+  - `verzola-control/pyproject.toml`
+- Added renderer snapshot/integration coverage:
+  - `verzola-control/tests/test_render_engine.py`
+- Added Unit U3-B2 documentation and traceability artifacts:
+  - `docs/policy-renderer-artifact-semantics.md`
+  - `docs/adr/0008-u3-b2-config-renderer.md`
+  - `docs/reviews/u3-b2-proxy-ingestion-compatibility-review.md`
+  - `docs/bolts/u3-b2-traceability.md`
+- Updated `README.md` version marker from `v0.1.11` to `v0.1.12` and synchronized quick start, repository snapshot, progress notes, validation notes, and next actions for U3-B2 completion.
+- Updated `CONTRIBUTING.md` and `SECURITY.md` to reflect renderer workflow and current Unit U3 scope.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`15` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.12-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-control/.tmp-tests/`
+
 ## v0.1.11
 
 ### Added or Changed

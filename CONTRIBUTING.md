@@ -30,6 +30,7 @@ Thanks for helping improve VERZOLA.
    - `python -B -m unittest discover -s tests -v`
    - optional CLI check:
      - `python -m verzola_control validate <policy-file.yaml>`
+     - `python -m verzola_control render <policy-file.yaml> --environment dev --output -`
 5. Open a pull request with:
    - problem statement
    - approach summary

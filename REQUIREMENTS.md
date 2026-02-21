@@ -251,13 +251,13 @@ Interfaces/Dependencies:
 - CI pipeline for validation gates
 
 Acceptance criteria:
-- [ ] Invalid policies fail validation with actionable diagnostics.
-- [ ] Rendered config is deterministic and environment-aware.
+- [x] Invalid policies fail validation with actionable diagnostics.
+- [x] Rendered config is deterministic and environment-aware.
 - [ ] Reports summarize domain policy posture and detected gaps.
 
 Deliverables:
-- [ ] `verzola-control/verzola_control/policy/*`
-- [ ] `verzola-control/verzola_control/validate/*`
+- [x] `verzola-control/verzola_control/policy/*`
+- [x] `verzola-control/verzola_control/validate/*`
 - [ ] CLI docs and examples
 
 #### [x] Bolt U3-B1: Schema and Validation Engine
@@ -270,13 +270,15 @@ Subtasks:
 - Completed: 2026-02-21
 - Evidence: `python -B -m unittest discover -s tests -v` (run in `verzola-control`) -> `9 passed; 0 failed`.
 
-#### [ ] Bolt U3-B2: Config Renderer
+#### [x] Bolt U3-B2: Config Renderer
 Subtasks:
-- [ ] Design: intermediate representation and rendering templates.
-- [ ] Implement: deterministic config generation.
-- [ ] Test: snapshot tests for renderer outputs.
-- [ ] Docs: generated artifact semantics.
-- [ ] Review: compatibility review with proxy ingestion.
+- [x] Design: intermediate representation and rendering templates.
+- [x] Implement: deterministic config generation.
+- [x] Test: snapshot tests for renderer outputs.
+- [x] Docs: generated artifact semantics.
+- [x] Review: compatibility review with proxy ingestion.
+- Completed: 2026-02-21
+- Evidence: `python -B -m unittest discover -s tests -v` (run in `verzola-control`) -> `15 passed; 0 failed`.
 
 #### [ ] Bolt U3-B3: Policy Reports and CLI UX
 Subtasks:
