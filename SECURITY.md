@@ -13,8 +13,9 @@ Security fixes are applied on `main` and documented in `CHANGELOG.md`.
 - Implemented and test-covered scope includes:
   - inbound proxy slice in `verzola-proxy` (Unit U1 Bolts U1-B1/U1-B2/U1-B3),
   - outbound relay slice in `verzola-proxy` (Unit U2 Bolts U2-B1/U2-B2/U2-B3), including session orchestration, deterministic `250/4xx` mapping, and outbound TLS policy application.
+  - control-plane policy schema and strict validation baseline in `verzola-control` (Unit U3 Bolt U3-B1), including parser/validator diagnostics and CLI validation workflow.
 - A production TLS adapter is not yet implemented; current code uses a `TlsUpgrader` interface with `NoopTlsUpgrader` for scaffolding and tests.
-- Control-plane policy tooling, TLS capability/PQ classification, observability packaging, and deployment/release hardening remain planned (`REQUIREMENTS.md` Units U3-U6).
+- Remaining control-plane rendering/reporting work plus TLS capability/PQ classification, observability packaging, and deployment/release hardening remain planned (`REQUIREMENTS.md` Unit U3 Bolts U3-B2/U3-B3 and Units U4-U6).
 - Treat current builds as pre-production and validate controls in an isolated environment before any internet-facing deployment.
 
 ## Reporting a Vulnerability

@@ -25,7 +25,12 @@ Thanks for helping improve VERZOLA.
      - `cargo test --test outbound_orchestration`
      - `cargo test --test outbound_status_contract`
      - `cargo test --test outbound_tls_policy`
-4. Open a pull request with:
+4. Run control-plane validation from `verzola-control`:
+   - `cd ../verzola-control`
+   - `python -B -m unittest discover -s tests -v`
+   - optional CLI check:
+     - `python -m verzola_control validate <policy-file.yaml>`
+5. Open a pull request with:
    - problem statement
    - approach summary
    - validation evidence (test output, screenshots, logs)

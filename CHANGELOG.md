@@ -2,6 +2,58 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.11
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B1 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added control-plane package scaffold and CLI entrypoint under `verzola-control/`:
+  - `verzola-control/pyproject.toml`
+  - `verzola-control/verzola_control/__main__.py`
+  - `verzola-control/verzola_control/cli.py`
+- Added policy schema/domain model and parser modules:
+  - `verzola-control/verzola_control/policy/model.py`
+  - `verzola-control/verzola_control/policy/parser.py`
+- Added strict validation engine with actionable diagnostics:
+  - `verzola-control/verzola_control/validate/engine.py`
+- Added malformed/edge-case + CLI validation tests:
+  - `verzola-control/tests/test_validate_engine.py`
+- Added Unit U3-B1 documentation and traceability artifacts:
+  - `docs/policy-schema-reference.md`
+  - `docs/adr/0007-u3-b1-schema-validation-engine.md`
+  - `docs/reviews/u3-b1-maintainability-review.md`
+  - `docs/bolts/u3-b1-traceability.md`
+- Updated `README.md` version marker from `v0.1.10` to `v0.1.11` and synchronized quick start, repository snapshot, progress notes, and validation notes for U3-B1.
+- Updated `CONTRIBUTING.md` local validation workflow to include control-plane `unittest` coverage and `verzolactl validate` examples.
+- Updated `SECURITY.md` scope/limitations to include implemented Unit U3-B1 policy validation surface while keeping remaining U3-U6 scope explicit.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`9` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.11-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `verzola-control/.tmp-tests/`
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/target_u2_b1/`
+  - `verzola-proxy/target_u2_b1wSSldO/`
+  - `verzola-proxy/target_u2_b3_rebuild/`
+  - `verzola-proxy/target_u2_b3_rebuildrMqWaL/`
+  - `verzola-proxy/target-u2b2SXi4dh/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/temp_test_dir/`
+  - `verzola-proxy/rmetaB2f4iR/`
+  - `verzola-proxy/rmetancZsdL/`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.c67070f154ac956c-cgu.0.rcgu.o`
+  - `verzola-proxy/rename_probe.tmp`
+  - `repo/target_ci/`
+  - `repo/target_ci_u2_b3/`
+  - `repo/target_ci_u2_b3RfMHAM/`
+
 ## v0.1.10
 
 ### Added or Changed

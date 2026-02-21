@@ -260,13 +260,15 @@ Deliverables:
 - [ ] `verzola-control/verzola_control/validate/*`
 - [ ] CLI docs and examples
 
-#### [ ] Bolt U3-B1: Schema and Validation Engine
+#### [x] Bolt U3-B1: Schema and Validation Engine
 Subtasks:
-- [ ] Design: schema model and error taxonomy.
-- [ ] Implement: parser + validator with strict mode.
-- [ ] Test: malformed/edge-case fixture suite.
-- [ ] Docs: policy schema reference.
-- [ ] Review: maintainability review for future policy expansion.
+- [x] Design: schema model and error taxonomy.
+- [x] Implement: parser + validator with strict mode.
+- [x] Test: malformed/edge-case fixture suite.
+- [x] Docs: policy schema reference.
+- [x] Review: maintainability review for future policy expansion.
+- Completed: 2026-02-21
+- Evidence: `python -B -m unittest discover -s tests -v` (run in `verzola-control`) -> `9 passed; 0 failed`.
 
 #### [ ] Bolt U3-B2: Config Renderer
 Subtasks:
