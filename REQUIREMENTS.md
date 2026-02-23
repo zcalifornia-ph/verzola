@@ -311,13 +311,15 @@ Deliverables:
 - [ ] Capability detection tests
 - [ ] PQ mode documentation and limitations
 
-#### [ ] Bolt U4-B1: Negotiation Result Classification
+#### [x] Bolt U4-B1: Negotiation Result Classification
 Subtasks:
-- [ ] Design: result classification model (`pq`, `classical`, `none`).
-- [ ] Implement: parser for negotiated group metadata.
-- [ ] Test: classification tests across handshake fixtures.
-- [ ] Docs: classification mapping reference.
-- [ ] Review: crypto review for correctness.
+- [x] Design: result classification model (`pq`, `classical`, `none`).
+- [x] Implement: parser for negotiated group metadata.
+- [x] Test: classification tests across handshake fixtures.
+- [x] Docs: classification mapping reference.
+- [x] Review: crypto review for correctness.
+- Completed: 2026-02-23
+- Evidence: `cargo test` (run in `verzola-proxy`) -> all suites passed, including `tls_negotiation_classification` (3 passed), `outbound_tls_policy` (6 passed), `outbound_orchestration` (2 passed), `outbound_status_contract` (2 passed), and inbound suites.
 
 #### [ ] Bolt U4-B2: DNS TXT Hint Integration (Optional)
 Subtasks:

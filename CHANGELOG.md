@@ -2,6 +2,41 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.15
+
+### Added or Changed
+- Completed Unit U4 / Bolt U4-B1 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added negotiated TLS group metadata parsing and `pq` / `classical` / `none` classification in:
+  - `verzola-proxy/src/tls/mod.rs`
+- Exported the new TLS utility module from:
+  - `verzola-proxy/src/lib.rs`
+- Added handshake-fixture classification coverage in:
+  - `verzola-proxy/tests/tls_negotiation_classification.rs`
+- Added Unit U4-B1 documentation and traceability artifacts:
+  - `docs/tls-negotiation-classification-reference.md`
+  - `docs/adr/0010-u4-b1-negotiated-group-classification.md`
+  - `docs/reviews/u4-b1-crypto-classification-review.md`
+  - `docs/bolts/u4-b1-traceability.md`
+- Updated `README.md` version marker from `v0.1.14` to `v0.1.15` and synchronized repository snapshot, quick-start validation commands, roadmap progress notes, and immediate next actions for U4-B1 completion.
+- Revalidated implemented proxy scope on `2026-02-23` with `cargo test` in `verzola-proxy` (all suites passed, including `tls_negotiation_classification` with `3` tests; `0` failures).
+- Added detailed version documentation at `docs/version-v0.1.15-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `repo/target_ci*/`
+  - `verzola-proxy/target*/`
+  - `verzola-proxy/target-*/`
+  - `verzola-proxy/.tmp-tests/`
+  - `verzola-proxy/codex-target-u4b1/`
+  - `verzola-proxy/.codex-test-write/`
+  - `verzola-proxy/.tmpArurTo.temp-archive/`
+  - `verzola-proxy/rmeta*/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/temp_test_dir/`
+  - `verzola-proxy/rename_probe.tmp`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.*.rcgu.o`
+
 ## v0.1.14
 
 ### Added or Changed
