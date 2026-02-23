@@ -2,6 +2,133 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.14
+
+### Added or Changed
+- Sanitized historical `CHANGELOG.md` `For Deletion` notes in `v0.1.11` through `v0.1.13` by replacing a hidden local temp-path reference with generic wording.
+- Updated `README.md` version marker from `v0.1.13` to `v0.1.14`.
+- Updated `README.md` repository snapshot to include `docs/version-v0.1.14-docs.md`.
+- Added detailed version documentation at `docs/version-v0.1.14-docs.md`.
+- Documentation-only release metadata sync; no runtime behavior or code-path changes.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `repo/target_ci*/`
+  - `verzola-proxy/target*/`
+  - `verzola-proxy/target-*/`
+  - `verzola-proxy/rmeta*/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/rename_probe.tmp`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.*.rcgu.o`
+
+## v0.1.13
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B3 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Marked Unit U3 acceptance criteria, deliverables, and unit-level validation gate complete in `REQUIREMENTS.md`.
+- Added control-plane policy reporting implementation under `verzola-control`:
+  - `verzola-control/verzola_control/report/engine.py`
+  - `verzola-control/verzola_control/report/__init__.py`
+- Extended control-plane CLI with `verzolactl report` support (`--environment`, `--format`, `--output`, strict/non-strict parity) in:
+  - `verzola-control/verzola_control/cli.py`
+- Updated package metadata for report module export:
+  - `verzola-control/pyproject.toml`
+- Added report engine + CLI integration coverage (including sample repo-style path test):
+  - `verzola-control/tests/test_report_engine.py`
+- Added Unit U3-B3 documentation and traceability artifacts:
+  - `docs/policy-reporting-cli.md`
+  - `docs/adr/0009-u3-b3-policy-reporting-cli-ux.md`
+  - `docs/reviews/u3-b3-cli-usability-review.md`
+  - `docs/bolts/u3-b3-traceability.md`
+- Updated `README.md` version marker from `v0.1.12` to `v0.1.13` and synchronized quick start, repository snapshot, progress notes, validation notes, and next actions for Unit U3 closure.
+- Updated `CONTRIBUTING.md` and `SECURITY.md` to reflect report workflow and Unit U4-U6 forward scope.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`20` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.13-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - Temporary local control-plane test artifact directories created during validation runs.
+
+## v0.1.12
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B2 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added deterministic, environment-aware renderer implementation under `verzola-control`:
+  - `verzola-control/verzola_control/render/engine.py`
+  - `verzola-control/verzola_control/render/__init__.py`
+- Extended control-plane CLI with `verzolactl render` support (`--environment`, `--output`, strict/non-strict parity with validation) in:
+  - `verzola-control/verzola_control/cli.py`
+- Updated package metadata for renderer module export:
+  - `verzola-control/pyproject.toml`
+- Added renderer snapshot/integration coverage:
+  - `verzola-control/tests/test_render_engine.py`
+- Added Unit U3-B2 documentation and traceability artifacts:
+  - `docs/policy-renderer-artifact-semantics.md`
+  - `docs/adr/0008-u3-b2-config-renderer.md`
+  - `docs/reviews/u3-b2-proxy-ingestion-compatibility-review.md`
+  - `docs/bolts/u3-b2-traceability.md`
+- Updated `README.md` version marker from `v0.1.11` to `v0.1.12` and synchronized quick start, repository snapshot, progress notes, validation notes, and next actions for U3-B2 completion.
+- Updated `CONTRIBUTING.md` and `SECURITY.md` to reflect renderer workflow and current Unit U3 scope.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`15` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.12-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - Temporary local control-plane test artifact directories created during validation runs.
+
+## v0.1.11
+
+### Added or Changed
+- Completed Unit U3 / Bolt U3-B1 in `REQUIREMENTS.md` with checked subtasks, completion date, and acceptance evidence.
+- Added control-plane package scaffold and CLI entrypoint under `verzola-control/`:
+  - `verzola-control/pyproject.toml`
+  - `verzola-control/verzola_control/__main__.py`
+  - `verzola-control/verzola_control/cli.py`
+- Added policy schema/domain model and parser modules:
+  - `verzola-control/verzola_control/policy/model.py`
+  - `verzola-control/verzola_control/policy/parser.py`
+- Added strict validation engine with actionable diagnostics:
+  - `verzola-control/verzola_control/validate/engine.py`
+- Added malformed/edge-case + CLI validation tests:
+  - `verzola-control/tests/test_validate_engine.py`
+- Added Unit U3-B1 documentation and traceability artifacts:
+  - `docs/policy-schema-reference.md`
+  - `docs/adr/0007-u3-b1-schema-validation-engine.md`
+  - `docs/reviews/u3-b1-maintainability-review.md`
+  - `docs/bolts/u3-b1-traceability.md`
+- Updated `README.md` version marker from `v0.1.10` to `v0.1.11` and synchronized quick start, repository snapshot, progress notes, and validation notes for U3-B1.
+- Updated `CONTRIBUTING.md` local validation workflow to include control-plane `unittest` coverage and `verzolactl validate` examples.
+- Updated `SECURITY.md` scope/limitations to include implemented Unit U3-B1 policy validation surface while keeping remaining U3-U6 scope explicit.
+- Revalidated control-plane scope on `2026-02-21` with `python -B -m unittest discover -s tests -v` in `verzola-control` (`9` passed; `0` failed).
+- Added detailed version documentation at `docs/version-v0.1.11-docs.md`.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - Temporary local control-plane test artifact directories created during validation runs.
+  - `verzola-proxy/target/`
+  - `verzola-proxy/target_ci_test/`
+  - `verzola-proxy/target_ci1a5BY6/`
+  - `verzola-proxy/target_u1_b3/`
+  - `verzola-proxy/target_u1_b38vm3eI/`
+  - `verzola-proxy/target_u1_b3bfvozlA/`
+  - `verzola-proxy/target_u2_b1/`
+  - `verzola-proxy/target_u2_b1wSSldO/`
+  - `verzola-proxy/target_u2_b3_rebuild/`
+  - `verzola-proxy/target_u2_b3_rebuildrMqWaL/`
+  - `verzola-proxy/target-u2b2SXi4dh/`
+  - `verzola-proxy/targetnOSdwx/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/temp_test_dir/`
+  - `verzola-proxy/rmetaB2f4iR/`
+  - `verzola-proxy/rmetancZsdL/`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.c67070f154ac956c-cgu.0.rcgu.o`
+  - `verzola-proxy/rename_probe.tmp`
+  - `repo/target_ci/`
+  - `repo/target_ci_u2_b3/`
+  - `repo/target_ci_u2_b3RfMHAM/`
+
 ## v0.1.10
 
 ### Added or Changed
