@@ -2,6 +2,26 @@
 
 Status: pre-alpha (docs/spec complete, implementation in progress).
 
+## v0.1.14
+
+### Added or Changed
+- Sanitized historical `CHANGELOG.md` `For Deletion` notes in `v0.1.11` through `v0.1.13` by replacing a hidden local temp-path reference with generic wording.
+- Updated `README.md` version marker from `v0.1.13` to `v0.1.14`.
+- Updated `README.md` repository snapshot to include `docs/version-v0.1.14-docs.md`.
+- Added detailed version documentation at `docs/version-v0.1.14-docs.md`.
+- Documentation-only release metadata sync; no runtime behavior or code-path changes.
+
+### For Deletion
+- Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
+  - `repo/target_ci*/`
+  - `verzola-proxy/target*/`
+  - `verzola-proxy/target-*/`
+  - `verzola-proxy/rmeta*/`
+  - `verzola-proxy/tmp-check/`
+  - `verzola-proxy/rename_probe.tmp`
+  - `verzola-proxy/rustc_probe.rs`
+  - `verzola-proxy/rustc_probe.rustc_probe.*.rcgu.o`
+
 ## v0.1.13
 
 ### Added or Changed
@@ -28,7 +48,7 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
 
 ### For Deletion
 - Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
-  - `verzola-control/.tmp-tests/`
+  - Temporary local control-plane test artifact directories created during validation runs.
 
 ## v0.1.12
 
@@ -55,7 +75,7 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
 
 ### For Deletion
 - Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
-  - `verzola-control/.tmp-tests/`
+  - Temporary local control-plane test artifact directories created during validation runs.
 
 ## v0.1.11
 
@@ -85,7 +105,7 @@ Status: pre-alpha (docs/spec complete, implementation in progress).
 
 ### For Deletion
 - Build/test artifacts currently present in workspace (left intentionally for manual cleanup):
-  - `verzola-control/.tmp-tests/`
+  - Temporary local control-plane test artifact directories created during validation runs.
   - `verzola-proxy/target/`
   - `verzola-proxy/target_ci_test/`
   - `verzola-proxy/target_ci1a5BY6/`

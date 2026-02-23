@@ -40,7 +40,7 @@
   <p align="center">
     <strong>VERZOLA is a drop-in SMTP security sidecar for Postfix that prefers hybrid/PQ TLS when possible, falls back safely when not, and makes transport security observable and policy-controlled.</strong>
     <br />
-    Version: v0.1.13
+    Version: v0.1.14
     <br />
     Status: pre-alpha (docs/spec complete, implementation in progress).
     <br />
@@ -312,6 +312,7 @@ verzola/
     version-v0.1.11-docs.md
     version-v0.1.12-docs.md
     version-v0.1.13-docs.md
+    version-v0.1.14-docs.md
     adr/
       0001-u1-b1-listener-starttls-state-machine.md
       0002-u1-b2-streaming-forwarder.md
